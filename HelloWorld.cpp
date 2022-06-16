@@ -37,12 +37,15 @@ int main()
 	//Section6_Challenge();
 
 	//Section7();
-	Section7_Challenge();
+	//Section7_Challenge();
 
+	//Section8();
+	Section8_Challenge();
 
 	return 0;
 }
 
+// Variables 
 void Chapter1()
 {
 	int a;	    // no initializer (only definition)
@@ -105,6 +108,7 @@ void Chapter1()
 	std::cout << input2 << " - " << input3 << " is " << input2 - input3 << ".";
 }
 
+// using other directives
 void Chapter2()
 {
 	int num{ getInteger() }; // first call
@@ -148,6 +152,7 @@ void Chapter2_2()
 	writeAnswer(x / y);
 }
 
+// Data types & boolean outputs
 void Chapter4()
 {
 	std::cout << "bool:\t\t" << sizeof(bool) << "bytes\n";
@@ -378,7 +383,7 @@ double distanceFallen(double seconds)
 	return gravity * ((seconds * seconds)/2);
 }
 
-// simulat ball dropped off a tower
+// Simulate ball dropped off a tower
 void Chapter4_4()
 {
 	int secondsAfterDropping{ 0 };
@@ -399,6 +404,7 @@ void Chapter4_4()
 	std::cout << "At " << secondsAfterDropping << " seconds, the ball is on the ground.";
 }
 
+// Variables and consts
 void Section6_Challenge()
 {
 	const double smallRoomFee{ 25 };
@@ -429,6 +435,7 @@ void Section6_Challenge()
 
 }
 
+// Arrays and vectors
 void Section7()
 {
 	int test_scores[5] {100, 99, 95, 87, 88}; // create array of length 5 and only length 5
@@ -474,6 +481,7 @@ void Section7()
 	std::cout << test_scores2.at(10) << '\n';
 }
 
+// Arrays and vectors
 void Section7_Challenge()
 {
 	std::cout << "\n\n";
@@ -507,4 +515,142 @@ void Section7_Challenge()
 	std::cout << vector_2d.at(0).at(1) << '\n';
 	std::cout << vector_2d.at(1).at(0) << '\n';
 	std::cout << vector_2d.at(1).at(1) << '\n';
+}
+
+// Operators
+void Section8()
+{
+	int total{};
+	int num1{}, num2{}, num3{};
+	const int count{ 3 };
+
+
+	std::cout << "Enter 3 integers separated by spaces: ";
+	std::cin >> num1 >> num2 >> num3;
+
+	total = num1 + num2 + num3;
+
+	double average{ 0.0 };
+
+	//average = total / count; // Will only give integer values since total and count are integers
+	//average = (double)total / count; // Old style
+	average = static_cast<double>(total) / count; // This will convert the result to a double value
+
+	std::cout << "The 3 numbers were: " << num1 << ", " << num2 << ", " << num3 << std::endl;
+	std::cout << "The sum of the numbers is: " << total << std::endl;
+	std::cout << "The average of the numbers is: " << average << std::endl;
+	
+	double double1{}, double2{};
+	bool equal_result{};
+	bool not_equal_result{};
+	
+	std::cout << "Enter two doubles separated by a space: ";
+	std::cin >> double1 >> double2;
+
+	// These can cause weird behaviour as it's not completely precise
+	// I.e 12.0 and 11.999999999999 are equal - need special libraries for higher precision
+	equal_result = (double1 == double2);
+	not_equal_result != (double1 == double2);
+	std::cout << "Comparison result (equals): " << equal_result << std::endl;
+	std::cout << "Comparison result (not equals): " << not_equal_result << std::endl;
+
+	// Compound operators
+	bool resultingBool{};
+	int lhs = 5;
+	int rhs = 10;
+	lhs += rhs; // lhs = lhs + (rhs);
+	lhs -= rhs; // lhs = lhs - (rhs);
+	lhs *= rhs; // lhs = lhs * (rhs);
+	lhs /= rhs; // lhs = lhs / (rhs);
+	lhs %= rhs; // lhs = lhs % (rhs);
+
+
+	std::cout << std::endl;
+}
+
+void Section8_Challenge()
+{
+	int numberOfCents1{}, numberOfCents2{};
+	int dollarCount{}, quarterCount{}, dimeCount{}, nickelCount{}, pennyCount{};
+	const int dollar{ 100 }, quarter{ 25 }, dime{ 10 }, nickel{ 5 }, penny{ 1 };
+
+	std::cout << "Enter a number representing the number of cents: ";
+	std::cin >> numberOfCents1;
+	numberOfCents2 = numberOfCents1; // duplicate for second solution
+
+	/*
+	* 1 dollar  = 100 cents
+	* 1 quarter = 25 cents
+	* 1 dime    = 10 cents
+	* 1 nickel  = 5 cents
+	* 1 penny   = 1 cent
+	*/
+
+	// One solution
+	while (numberOfCents1 >= dollar)
+	{
+		numberOfCents1 -= dollar;
+		dollarCount++;
+	}
+		
+	while (numberOfCents1 >= quarter)
+	{
+		numberOfCents1 -= quarter;
+		quarterCount++;
+	}
+		
+	while (numberOfCents1 >= dime)
+	{
+		numberOfCents1 -= dime;
+		dimeCount++;
+	}
+	
+	while (numberOfCents1 >= nickel)
+	{
+		numberOfCents1 -= nickel;
+		nickelCount++;
+	}
+	
+	while (numberOfCents1 >= penny)
+	{
+		numberOfCents1 -= penny;
+		pennyCount++;
+	}
+
+	std::cout << "Dollars: " << dollarCount << '\n';
+	std::cout << "Quarters: " << quarterCount << '\n';
+	std::cout << "Dimes: " << dimeCount << '\n';
+	std::cout << "Nickels: " << nickelCount << '\n';
+	std::cout << "Pennies: " << pennyCount << '\n';
+
+
+	// Another Solution
+	std::cout << "\nWithout loops\n";
+
+	dollarCount = 0;
+	quarterCount = 0;
+	dimeCount = 0;
+	nickelCount = 0;
+	pennyCount = 0;
+
+	dollarCount = numberOfCents2 / dollar;
+	numberOfCents2 -= dollar * dollarCount;
+	
+	quarterCount = numberOfCents2 / quarter;
+	numberOfCents2 -= quarter * quarterCount;
+	
+	dimeCount = numberOfCents2 / dime;
+	numberOfCents2 -= dime * dimeCount;
+	
+	nickelCount = numberOfCents2 / nickel;
+	numberOfCents2 -= nickel * nickelCount;
+	
+	pennyCount = numberOfCents2 / penny;
+	numberOfCents2 -= penny * pennyCount;
+
+	std::cout << "Dollars: " << dollarCount << '\n';
+	std::cout << "Quarters: " << quarterCount << '\n';
+	std::cout << "Dimes: " << dimeCount << '\n';
+	std::cout << "Nickels: " << nickelCount << '\n';
+	std::cout << "Pennies: " << pennyCount << '\n';
 }
