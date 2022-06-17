@@ -7,6 +7,7 @@
 #include <string>       // allows use of std::string
 #include <string_view>
 #include <vector>       // for using vectors
+#include <iomanip>     // IO manipulation
 
 /*
 * Arrange as:
@@ -40,7 +41,10 @@ int main()
 	//Section7_Challenge();
 
 	//Section8();
-	Section8_Challenge();
+	//Section8_Challenge();
+
+	//Section9();
+	Section9_Challenge();
 
 	return 0;
 }
@@ -319,7 +323,7 @@ void Chapter4()
 	int bin2{};
 	bin = 0b1; // assign binary 0000 0000 0000 0001 to the variable
 	bin = 0b11;
-	bin - 0b1010;
+	bin = 0b1010;
 	bin = 0b1111'0000; // assign binary 0000 0000 1111 0000 to the variable
 	// ' can be used as a digit separator 
 
@@ -568,6 +572,7 @@ void Section8()
 	std::cout << std::endl;
 }
 
+// Calculating change from cents
 void Section8_Challenge()
 {
 	int numberOfCents1{}, numberOfCents2{};
@@ -633,8 +638,8 @@ void Section8_Challenge()
 	nickelCount = 0;
 	pennyCount = 0;
 
-	dollarCount = numberOfCents2 / dollar;
-	numberOfCents2 -= dollar * dollarCount;
+	dollarCount = numberOfCents2 / dollar; // Get whole number of dollars that fit
+	numberOfCents2 -= dollar * dollarCount; // Get the remainder left (should be less than a dollar)
 	
 	quarterCount = numberOfCents2 / quarter;
 	numberOfCents2 -= quarter * quarterCount;
@@ -653,4 +658,410 @@ void Section8_Challenge()
 	std::cout << "Dimes: " << dimeCount << '\n';
 	std::cout << "Nickels: " << nickelCount << '\n';
 	std::cout << "Pennies: " << pennyCount << '\n';
+}
+
+// Flow control
+void Section9()
+{
+	int num{100};
+	int min{ 10 }, max{ 100 };
+	std::cout << "Enter a number: ";
+	//std::cin >> num;
+
+	if (num >= min)
+	{
+		int diff{ num - min }; // scope is within the if statement
+		std::cout << num << " is greater than or equal to " << min << '\n';
+		std::cout << num << " is " << diff << " greater than " << min;
+	}
+
+	if (num <= max)
+	{
+		int diff{ max - num };
+		std::cout << num << " is less than  or equal to " << max << '\n';
+		std::cout << num << " is " << diff << " less than " << max << '\n';
+	}
+
+	int score{80};
+	char letter_grade{};
+
+	std::cout << "Enter your score on the exam (0 - 100): ";
+	//std::cin >> score;
+
+	if (score >= 0 && score <= 100)
+	{
+		if (score >= 90)
+			letter_grade = 'A';
+		else if (score >= 80)
+			letter_grade = 'B';
+		else if (score >= 70)
+			letter_grade = 'C';
+		else if (score >= 60)
+			letter_grade = 'D';
+		else
+			letter_grade = 'F';
+
+		std::cout << "Your grade is: " << letter_grade << '\n';
+
+		if (letter_grade == 'F')
+			std::cout << "Sorry, you must repeat this class.\n";
+		else
+			std::cout << "Congratulations, you pass this class.\n";
+	}
+	else
+	{
+		std::cout << "Sorry, value not in range.\n";
+	}
+
+	std::cout << "Enter the letter grade you expect on the exam: ";
+	//std::cin >> letter_grade;
+
+	switch (letter_grade)
+	{
+    	case 'A': // Once a case statement is successfull, it will execute everything underneath it
+		case 'a': // Unless a break is reached.
+			std::cout << "You need at least 90\n";
+			break;
+		case 'B':
+		case 'b':
+			std::cout << "You need 80-89\n";
+			break;
+		case 'C':
+		case 'c':
+			std::cout << "You need 70-79\n";
+			break;
+		case 'D':
+		case 'd':
+			std::cout << "You need 60-69\n";
+			break;
+		case 'F':
+		case 'f':
+		{
+			char confirm{};
+			std::cout << "Are you sure (Y/N): ";
+			std::cin >> confirm;
+
+			if (confirm == 'Y' || confirm == 'y')
+				std::cout << "You need 59 or under\n";
+			else if (confirm == 'N' || confirm == 'n')
+				std::cout << "Go study\n";
+			else
+				std::cout << "Illegal choice";
+			
+			break;
+		}
+		default:
+			std::cout << "Sorry, not a valid grade\n";
+	}
+
+	// conditional operator
+	num = 4;
+	
+	if (num % 2 == 0)
+		std::cout << num << " is even.\n";
+	else
+		std::cout << num << " is odd.\n";
+
+	// Does the same as above
+	std::cout << num << " is " << ((num % 2 == 0) ? "even." : "odd.") << '\n';
+
+	// for loops
+	for (int i {1}; i <= 5; i+=2)
+		std::cout << i << '\n';
+
+	std::vector<int> scores{ 100, 90, 87 };
+	for (int i{ 0 }; i < scores.size(); i++)
+		std::cout << scores[i] << '\n';
+
+	// can use comma operator to manipulate multiple iterators ( i < 5 wil never happen here as j < 7 occurs first)
+	for (int i{ 0 }, j{ 5 }; i < 5, j < 7; i++, j++)
+		std::cout << i << " * " << j << " : " << (i * j) << '\n';
+
+	// will loop forever, all expressions in for loop are optional
+	//for (;;)
+	//	std::cout << "Endless loop" << '\n';
+
+	for (int i{ 1 }; i <= 100; i++)
+	{
+		std::cout << i;
+		if (i % 10 == 0)
+			std::cout << '\n';
+		else
+			std::cout << " ";
+	}
+
+	for (int i{ 1 }; i <= 100; i++)
+	{
+		std::cout << i << ((i % 10 == 0) ? '\n' : ' ');
+	}
+
+	// range-based loop
+	std::vector<int> new_scores{ 100, 90, 96 };
+
+	for (int score : new_scores)
+		std::cout << score << '\n';
+	
+
+	for (auto score : new_scores) // auto determines the type by itself
+		std::cout << score << '\n';
+
+	// remove spaces from string
+	for (auto c : "This is a test")
+		if (c != ' ')
+			std::cout << c;
+	
+	std::cout << '\n';
+
+	// while (can use conditional or boolean flag)
+	bool done{ false };
+	int number{ 3 };
+
+	while (!done)
+	{
+		std::cout << "Enter an integer between 1 and 5: ";
+		//std::cin >> number;
+
+		if (number <= 1 || number >= 5)
+		{
+			std::cout << "Out of range, try again" << '\n';
+		}
+		else
+		{
+			std::cout << "Thanks!" << '\n';
+			done = true;
+		}
+	}
+
+	// do-while (executes at least once)
+	char choice{};
+	do
+	{
+		std::cout << "1. Do this \n2. Do that \n3. Do something else \nQ. Quit\n\n";
+		std::cout << "Enter your selection: ";
+		std::cin >> choice;
+
+		switch (choice)
+		{
+		    case '1':
+				std::cout << "Doing this.\n";
+				break;
+			case '2':
+				std::cout << "Doing that.\n";
+				break;
+			case '3':
+				std::cout << "Doing something else.\n";
+				break;
+			case 'Q':
+			case 'q':
+				std::cout << "Quitting.\n";
+				break;
+			default:
+				std::cout << "I can't do that.\n";
+				break;
+		}
+
+		std::cout << "------------------------------\n";
+	}
+	while (choice != 'Q' && choice != 'q');
+
+	// continue and break
+	std::vector<int> values{ 1, 2, -1, 3, -1, -99, 7, 8, 10 };
+	for (auto val : values)
+	{
+		if (val == -99)
+			break; // exits for loop here
+		else if (val == -1)
+			continue; // skips the rest of the code and continues to the next iteration
+		else
+			std::cout << val << '\n';
+	}
+
+	// nested loop
+	for (int num1{ 1 }; num1 <= 10; num1++)
+	{
+		for (int num2{ 1 }; num2 <= 10; num2++)
+		{
+			std::cout << num1 * num2 << " ";
+		}
+
+		std::cout << '\n';
+	}
+
+	int num_items{};
+
+	std::cout << "How many items do you have? ";
+	std::cin >> num_items;
+
+	std::vector<int> data{};
+
+	for (int i{ 1 }; i <= num_items; i++)
+	{
+		int data_item{};
+		std::cout << "Enter data item " << i << ": ";
+		std::cin >> data_item;
+		data.push_back(data_item);
+	}
+
+	std::cout << "You entered\n";
+
+	for (auto data_item : data)
+	{
+		std::cout << data_item << '\n';
+	}
+
+	std::cout << "Here is the histogram\n";
+
+	for (auto data_item : data)
+	{
+		for (int i{ 1 }; i <= data_item; i++)
+		{
+			std::cout << ((i % 5 == 0) ? '*' : '-');
+		}
+		
+		std::cout << '\n';
+	}
+}
+
+void Section9_Challenge()
+{
+	std::vector<int> numbers;
+	char choice{};
+
+	do
+	{
+		std::cout << "P - Print numbers\n";
+		std::cout << "A - Add a number\n";
+		std::cout << "M - Display mean of the numbers\n";
+		std::cout << "S - Display the smallest number\n";
+		std::cout << "L - Display the largest number\n";
+		std::cout << "Q - Quit\n\n";
+
+		std::cout << "Enter your choice: ";
+		std::cin >> choice;
+
+		switch (choice)
+		{
+			case 'P':
+			case 'p':
+			{
+				if (numbers.size() > 0)
+				{
+					std::cout << "[ ";
+					for (auto number : numbers)
+					{
+						std::cout << number << " ";
+					}
+					std::cout << ']';
+				}
+				else
+				{
+					std::cout << "[] - the list is empty";
+				}
+
+				std::cout << '\n';
+
+				break;
+			}
+
+			case 'A':
+			case 'a':
+			{
+				int numberToAdd;
+				std::cout << "Enter the number to add: ";
+				std::cin >> numberToAdd;
+
+				// Check that it's an integer
+				//if (std::cin.fail())
+				//{
+				//	std::cout << "Do you know what a number is?\n";
+				//	break;
+				//}
+					
+
+				numbers.push_back(numberToAdd);
+
+				std::cout << numberToAdd << " added.\n";
+
+				break;
+			}
+
+			case 'M':
+			case 'm':
+			{
+				if (numbers.size() == 0)
+				{
+					std::cout << "Unable to calculate the mean - no data.\n";
+					break;
+				}
+
+
+				int total{};
+
+				for (auto number : numbers)
+					total += number;
+
+				std::cout << "The mean is: " << (static_cast<double>(total) / numbers.size()) << '\n';
+
+				break;
+			}
+
+			case 'S':
+			case 's':
+			{
+				if (numbers.size() == 0)
+				{
+					std::cout << "Unable to find smallest- no data.\n";
+					break;
+				}
+
+				// initialize with first number so we have something to compare to
+				int smallest{numbers.at(0)};
+
+				for (auto number : numbers)
+				{
+					// get the smaller number of the comparison
+					smallest = ((number < smallest) ? number : smallest);
+				}
+
+				std::cout << "The smallest number is " << smallest << '\n';
+
+				break;
+			}
+
+			case 'L':
+			case 'l':
+			{
+				if (numbers.size() == 0)
+				{
+					std::cout << "Unable to find smallest- no data.\n";
+					break;
+				}
+
+				// initialize with first number so we have something to compare to
+				int largest{ numbers.at(0) };
+
+				for (auto number : numbers)
+				{
+					// get the larger number of the comparison
+					largest = ((number > largest) ? number : largest);
+				}
+
+				std::cout << "The largest number is " << smallest << '\n';
+
+				break;
+			}
+
+			case 'Q':
+			case 'q':
+				std::cout << "Goodbye\n";
+				break;
+
+			default:
+				std::cout << "Unknown selection, please try again.\n";
+		}
+
+		std::cout << "\n-------------------------------\n";
+	}
+	while (choice != 'Q' && choice != 'q');
+
 }

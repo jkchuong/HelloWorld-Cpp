@@ -18,3 +18,6 @@ void Section7_Challenge();
 
 void Section8();
 void Section8_Challenge();
+
+void Section9();
+void Section9_Challenge();
