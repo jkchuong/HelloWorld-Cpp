@@ -23,3 +23,5 @@ void Section9();
 void Section9_Challenge();
 
 void Section10();
+void Section10_Challenge();
+void Section10_Assignment();

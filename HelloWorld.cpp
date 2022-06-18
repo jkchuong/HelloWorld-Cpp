@@ -49,7 +49,11 @@ int main()
 	//Section9();
 	//Section9_Challenge();
 
-	Section10();
+	//Section10();
+	//Section10_Challenge();
+	//Section10_Assignment();
+
+	Section11();
 
 	return 0;
 }
@@ -1220,4 +1224,93 @@ void Section10()
 
 	std::getline(std::cin, s1, 'x'); // third argument is the delimiter. Stop reading input at delimiter
 	std::cout << s1 << '\n'; // e.g input this isx, return this is
+}
+
+// Substitution encryption - try enigma machine?
+void Section10_Challenge()
+{
+	// Substitution Sample
+	const std::string alphabet{ "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ " };
+	const std::string key{ "XZNLWEBGJHQDYVTKFUOMPCIASRxznlwebgjhqdyztkfuompciasr " };
+
+	std::string decrypted{};
+	std::string encrypted{};
+
+	std::cout << "Enter the sentence to encrypt: ";
+	std::getline(std::cin, decrypted);
+
+	// For each character, get the position in the alphabet, then get corresponding key
+	for (char letter : decrypted)
+	{
+		size_t position = alphabet.find(letter);
+
+		if (position != std::string::npos)
+		{
+			encrypted += (key.at(position));
+		}
+		else
+		{
+			encrypted += '*';
+		}
+	}
+
+	std::cout << "The encrpted message is: " + encrypted;
+}
+
+// Letter Pyramid
+void Section10_Assignment()
+{
+	std::cout << "Enter a sentence to make a letter pyramid out of: ";
+
+	std::string input;
+	std::getline(std::cin, input);
+
+	// I know variables should be named consistently :(
+	size_t totalLength{ (input.size() * 2) - 1 }; // total length of the final string in pyramid
+	size_t middlePosition{ input.size() - 1};     // middle position of the pyramid
+
+	std::cout << "Total Length: " << totalLength << '\n';
+
+	/*
+	*  PART 1: PRINT RIGHT SEQUENCE
+	*  Print the current letter
+	*  Print all the letters before it
+	*/
+
+	for (int i{ 0 }; i < input.size(); i++)
+	{
+		for (int j{ i }; j >= 0; j--)
+		{
+			std::cout << input.at(i - j);
+		}
+
+		std::cout << '\n';
+	}
+
+	std::cout << "-------------------------------------------\n";
+
+	/*
+	*  PART 2: PRINT IN RIGHT POSITION
+	*  Print current letter in the middle
+	*  Print all the letters before it before and after the middle position
+	*/
+
+	for (int i{ 0 }; i < input.size(); i++)
+	{
+		std::string layer(totalLength, ' ');
+
+		for (int j{ i }; j >= 0; j--)
+		{
+			layer.at(middlePosition - j) = input.at(i - j);
+			layer.at(middlePosition + j) = input.at(i - j);
+		}
+
+		std::cout << layer;
+		std::cout << '\n';
+	}
+}
+
+void Section11()
+{
+
 }
