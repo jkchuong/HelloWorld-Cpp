@@ -4,10 +4,13 @@
 #include <iostream>     // Angled brackets for header files we didn't make. Quotes does files we make.
 #include <cstdint>      // for int_least#_t
 #include <iomanip>      // for output manipulator std::setprecision()
-#include <string>       // allows use of std::string
+#include <string>       // allows use of std::string for C++ Strings
 #include <string_view>
 #include <vector>       // for using vectors
-#include <iomanip>     // IO manipulation
+#include <iomanip>      // IO manipulation
+#include <cctype>       // for character-based functions
+#include <cstring>      // Functions that work with C-style strings
+#include <cstdlib>      // General purpose functions e.g convert C-style strings to other types (int, float, long, etc)
 
 /*
 * Arrange as:
@@ -44,7 +47,9 @@ int main()
 	//Section8_Challenge();
 
 	//Section9();
-	Section9_Challenge();
+	//Section9_Challenge();
+
+	Section10();
 
 	return 0;
 }
@@ -1046,7 +1051,7 @@ void Section9_Challenge()
 					largest = ((number > largest) ? number : largest);
 				}
 
-				std::cout << "The largest number is " << smallest << '\n';
+				std::cout << "The largest number is " << largest << '\n';
 
 				break;
 			}
@@ -1064,4 +1069,155 @@ void Section9_Challenge()
 	}
 	while (choice != 'Q' && choice != 'q');
 
+}
+
+// Characters and Strings
+void Section10()
+{
+	// C-style strings
+	char uninitialized_first_name[20];
+	char first_name[20]{};
+	char last_name[20]{};
+	char full_name[50]{"Jimmy Chuong"};
+	char temp[50]{};
+
+	std::cout << uninitialized_first_name << '\n'; // will likely display garbage
+
+	//std::cout << "Please enter your first name: ";
+	//std::cin >> first_name;
+	//std::cout << "Please enter your last name: ";
+	//std::cin >> last_name;
+	//std::cout << "--------------------------------------\n";
+
+	//// strlen(XXX) will return data of type size_t - platform-dependent. size_t =/= unsigned int
+	//// C-type strings are chars stored in array that ends in null pointer - no null pointer leads to problems
+	//std::cout << "Hello, " << first_name << " your first name has " << strlen(first_name) << " characters\n";
+	//std::cout << "and your last name, " << last_name << " has " << strlen(last_name) << " characters\n";
+
+	// These methods are unsafe, can cause corrupted data
+	//strcpy(full_name, first_name);   // copy first_name to full_name
+	//strcat(full_name, " ");          // concatenate full_name and a space
+	//strcat(full_name, last_name);     // concatenate last_name to full_name
+	//std::cout << "Your full name is " << full_name << '\n';
+
+	// Will take entire line
+	std::cout << "Enter your full name: ";
+	//std::cin.getline(full_name, 50); // reads 50 characters
+	std::cout << "Your full name is " << full_name << '\n';
+
+	// Will only take name up to white space
+	//std::cout << "Enter your full name: ";
+	//std::cin >> full_name;
+	//std::cout << "Your full name is " << full_name << '\n';
+
+	strcpy_s(temp, full_name);
+
+	if (strcmp(temp, full_name) == 0) // string compare, since we copied we expect them to be the same
+		std::cout << temp << " and " << full_name << " are the same\n";
+	else
+		std::cout << temp << " and " << full_name << " are the different\n";
+
+	std::cout << "--------------------------------------\n";
+
+	for (size_t i{ 0 }; i < strlen(full_name); i++)
+	{
+		if (isalpha(full_name[i])) // if character is alpha character
+			full_name[i] = toupper(full_name[i]); // make character capital
+	}
+
+	std::cout << "Your full name is " << full_name << '\n';
+
+	std::cout << "--------------------------------------\n";
+
+	if (strcmp(temp, full_name) == 0) // string compare, since we copied we expect them to be the same
+		std::cout << temp << " and " << full_name << " are the same\n";
+	else
+		std::cout << temp << " and " << full_name << " are the different\n";
+
+	std::cout << "--------------------------------------\n";
+
+	// strcmp returns < 0 if first string lexically comes before second string, > 0 if other way round
+	std::cout << "Result of comparing " << temp << " and " << full_name << ": " << strcmp(temp, full_name) << '\n';
+	std::cout << "Result of comparing " << full_name << " and " << temp << ": " << strcmp(full_name, temp) << '\n';
+
+	// C++ style strings
+	std::string s1;               // Empty - C++ style strings are always initialized
+	std::string s2{ "Frank" };    // Frank
+	std::string s3{ s2 };         // Frank
+	std::string s4{ "Frank", 3 }; // Fra - Take first 3 characters
+	std::string s5{ s3, 0, 2 };   // Fr - First index is starting index. Second is length i.e take index 0 and 1
+	std::string s6(3, 'X');       // XXX
+
+	s1 = "C++ Rocks!";
+	s2 = s1; // s2 now says "C++ Rocks!"
+
+	std::string part1{ "C++" };
+	std::string part2{ "is a powerful" };
+
+	std::string sentence;
+	sentence = part1 + " " + part2 + " language"; // C++ is a powerful language
+	// sentence = "C++" + " is powerful"; // Illegal as these are both C-style strings
+
+	s1 = "";
+	s2 = "Frank";
+
+	std::cout << s2[0] << '\n'; // F
+	std::cout << s2.at(0) << '\n'; // F
+	s2[0] = 'f'; // frank
+	s2.at(0) = 'p'; // prank
+
+	for (char c : s2)
+		std::cout << c << '\n';
+
+	for (int c : s2)
+		std::cout << '\n'; // Will print out ASCII code with 0 at the end for null character
+
+	// C++ strings can be compared lexically - i.e A < Z
+	s1 = "Apple";
+	s2 = "Banana";
+	s3 = "Kiwi";
+	s4 = "apple";
+	s5 = s1;
+
+	std::cout << s1 + " == " + s5 + ": " << (s1 == s5) << '\n'; // True
+	std::cout << s1 + " == " + s2 + ": " << (s1 == s2) << '\n'; // False
+	std::cout << s1 + " != " + s2 + ": " << (s1 != s2) << '\n'; // True
+	std::cout << s1 + " < " + s2 + ": " << (s1 < s2) << '\n';  // True
+	std::cout << s1 + " > " + s2 + ": " << (s1 > s2) << '\n';  // False
+	std::cout << s4 + " < " + s5 + ": " << (s4 < s5) << '\n';  // False - a is higher than A
+	std::cout << s1 + " == Apple : " << (s1 == "Apple") << '\n'; // True
+	
+	s1 = "This is a test";
+	std::cout << s1.substr(0, 4) << '\n';   // This
+	std::cout << s1.substr(5, 2) << '\n';   // is
+	std::cout << s1.substr(10, 4) << '\n';  // test
+
+	// Finds first index of first appearance
+	std::cout << s1.find("This") << '\n';   // 0
+	std::cout << s1.find("is") << '\n';     // 2
+	std::cout << s1.find("test") << '\n';   // 10
+	std::cout << s1.find('e') << '\n';      // 11
+	std::cout << s1.find("is", 4) << '\n';  // 5 - start search from index 4
+	std::cout << s1.find("XX") << '\n';     // string::npos - no position, some random stuff
+
+	size_t position = s1.find("XX");
+	if (position != std::string::npos)
+		std::cout << "Found XX at position: " << position << '\n';
+	else
+		std::cout << "Sorry XX could not be found\n";
+
+
+	// Erases substring of characters
+	std::cout << s1.erase(0, 5) << '\n'; // is a test
+	s1.clear(); // empties string s1
+
+	// Getting line
+	std::cin >> s1;   // Hello there
+	std::cout << s1 << '\n';  // Hello - extracted up to first space
+
+	std::getline(std::cin, s1); // Read entire line until \n
+	std::cout << s1 << '\n'; // Hello there
+
+	std::getline(std::cin, s1, 'x'); // third argument is the delimiter. Stop reading input at delimiter
+	std::cout << s1 << '\n'; // e.g input this isx, return this is
 }
