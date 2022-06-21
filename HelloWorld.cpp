@@ -1,6 +1,7 @@
 #include "HelloWorld.h" // Source files should #include their paired header file (if one exists)
 #include "Calculator.h" // These are directives (or preprocessor directive) -> includes (copies) the contents of these files to be compiled
 #include "io.h"
+#include "Section11.h"
 #include <iostream>     // Angled brackets for header files we didn't make. Quotes does files we make.
 #include <cstdint>      // for int_least#_t
 #include <iomanip>      // for output manipulator std::setprecision()
@@ -10,7 +11,8 @@
 #include <iomanip>      // IO manipulation
 #include <cctype>       // for character-based functions
 #include <cstring>      // Functions that work with C-style strings
-#include <cstdlib>      // General purpose functions e.g convert C-style strings to other types (int, float, long, etc)
+#include <cstdlib>      // General purpose functions e.g convert C-style strings to other types (int, float, long, rand etc)
+#include <ctime>        // required for time)_
 
 /*
 * Arrange as:
@@ -53,7 +55,8 @@ int main()
 	//Section10_Challenge();
 	//Section10_Assignment();
 
-	Section11();
+	//Section11();
+	Section11_Challenge();
 
 	return 0;
 }
@@ -1310,7 +1313,72 @@ void Section10_Assignment()
 	}
 }
 
+// Functions
 void Section11()
 {
+	int random_number{};
+	size_t count{ 10 };
+	int min{ 1 }; // lower bound (inclusive)
+	int max{ 5 }; // upper bound (inclusive)
 
+	std::cout << "RAND_MAX on my system is: " << RAND_MAX << '\n';
+	srand(time(nullptr)); // seed random number generator - no seed -> same sequence
+
+	for (size_t i{ 1 }; i <= count; i++)
+	{
+		random_number = rand() % max + min; // generate a random number [min, max]
+		std::cout << random_number << '\n';
+	}
+
+	int my_scores[]{ 100, 89, 90, 99, 67 };
+	print_array(my_scores, 5);
+	set_array(my_scores, 5, 100);
+	print_array(my_scores, 5); // this will all be 100
+	
+	int number{ 9999 };
+	std::cout << number << '\n'; 
+	scale_number(number);
+	std::cout << number << '\n'; // number will now be 100 as we used & in parameter
+
+	int a{ 10 }, b{ 4576 };
+	std::cout << "A is " << a << " and B is " << b << '\n';
+	swap(a, b);
+	std::cout << "A is " << a << " and B is " << b << '\n'; // numbers have swapped
+
+	std::vector my_vector{ 123, 456, 789 };
+	print_vector_ref(my_vector);
+
+	// scope
+	int num{ 100 };
+	int num2{ 500 };
+	std::cout << "Local num is: " << num << '\n';
+
+	{
+		int num{ 200 }; // new level of scope
+		std::cout << "Local num is: " << num << '\n';
+	}
+
+	static_local_example(); // 5000 6000
+	static_local_example(); // 6000 7000
+
+	std::cout << factorial(8) << '\n';
+	std::cout << fibonacci(30) << '\n';
 }
+
+// Modulaize Section 9 challenge with functions
+void Section11_Challenge()
+{
+	std::vector<int> numbers;
+	char choice{};
+
+	do
+	{
+		print_choices();
+		request_input(choice);
+		execute_choice(choice, numbers);
+
+		std::cout << "\n-------------------------------\n";
+	}
+	while (choice != 'Q' && choice != 'q');
+}
+
