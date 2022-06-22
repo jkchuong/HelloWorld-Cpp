@@ -3,6 +3,7 @@
 #include "io.h"
 #include "Section11.h"
 #include "Section12.h"
+#include "Player.h"
 #include <iostream>     // Angled brackets for header files we didn't make. Quotes does files we make.
 #include <cstdint>      // for int_least#_t
 #include <iomanip>      // for output manipulator std::setprecision()
@@ -60,7 +61,9 @@ int main()
 	//Section11_Challenge();
 
 	//Section12();
-	Section12_Challenge();
+	//Section12_Challenge();
+
+	Section13();
 
 	return 0;
 }
@@ -1678,7 +1681,7 @@ void Section12_Challenge()
 	int array1[]{ 1, 2, 3, 4, 5 };
 	int array2[]{ 10, 20, 30 };
 	
-	// careful of duplicate array names -> need to be clear
+	// careful of duplicate array names -> need to be clear or use namespaces
 	std::cout << "Array 1: ";
 	print_array_12(array1, array1_size);
 	std::cout << "Array 2: ";
@@ -1690,3 +1693,109 @@ void Section12_Challenge()
 	std::cout << "Result: ";
 	print_array_12(results, result_size);
 }
+
+class Account
+{
+private:
+	// Attributes
+	std::string name;
+	double balance;
+
+public:
+	// Methods
+	void set_balance(double bal);
+	double get_balance();
+	void deposit(double bal)
+	{
+		balance += bal;
+	}
+
+	void withdraw(double bal)
+	{
+		balance -= bal;
+	}
+
+	// Constructors
+	Account(){ };
+	Account(std::string name, double balance){ };
+	Account(std::string name){ };
+	Account(double balance){ };
+
+	// Destructor
+	~Account(){ };
+};
+
+// implementing memeber methods outside of class declaration
+void Account::set_balance(double bal)
+{
+	balance = bal;
+}
+
+double Account::get_balance()
+{
+	return balance;
+}
+
+// OOP
+void Section13()
+{
+	Player jimmy;
+	Player hero;
+	Player andy{ "Andy", 10, 10 };
+	Player mother{ "Mother" };
+
+	// cannot access private acces 
+	//jimmy.name = "Jimmy";
+	//hero.name = "hero";
+
+	jimmy.set_name("Jimmy");
+	hero.set_name("Hero");
+
+	Player players[]{ jimmy, hero };
+	std::vector<Player> players_vec{ jimmy };
+	players_vec.push_back(hero);
+
+	Player* enemy{ nullptr };
+	enemy = new Player;
+
+	//(*enemy).name = "Enemy";
+	//enemy->health = 800; // arrow operator, functions equivalent to above
+
+	enemy->set_name("Enemy");
+
+	jimmy.talk("I'm gonna kill you!");
+	enemy->talk("Try your worst!");
+
+	delete enemy; // Destructor called
+
+	Player* enemy2{ nullptr };
+	enemy2 = new Player("Enemy", 1000, 0);
+	delete enemy2; // Destructor called
+
+	std::cout << "-----------------------------------------------\n";
+
+	{
+		Player player;
+		Player slayer("Slayer1");
+		Player slayer2("Slayer2", 10);
+		Player slayer3("Slayer3", 10, 100);
+	} // Destructors called in reverse order they were created
+
+	std::cout << "-----------------------------------------------\n";
+
+	Account jimmy_account;
+	//jimmy_account.name = "Frank's accouint";
+	//jimmy_account.balance = 50000.0;
+	jimmy_account.deposit(800);
+	jimmy_account.withdraw(47976);
+
+	std::cout << "-----------------------------------------------\n";
+
+	Player to_be_copied{ "To Be Copied" };
+	std::cout << "to_be_copied is called " << to_be_copied.get_name() << '\n';
+	Player the_copier{ to_be_copied };
+	std::cout << "the_copier is called " << the_copier.get_name() << '\n';
+
+	std::cout << "-----------------------------------------------\n";
+
+} // All destructors called
