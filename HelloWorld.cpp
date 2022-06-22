@@ -4,6 +4,9 @@
 #include "Section11.h"
 #include "Section12.h"
 #include "Player.h"
+#include "Shallow.h"
+#include "Deep.h"
+#include "Move.h"
 #include <iostream>     // Angled brackets for header files we didn't make. Quotes does files we make.
 #include <cstdint>      // for int_least#_t
 #include <iomanip>      // for output manipulator std::setprecision()
@@ -1736,6 +1739,26 @@ double Account::get_balance()
 	return balance;
 }
 
+void display_shallow(Shallow s) // copy constructor is called here
+{
+	std::cout << s.get_data_value() << '\n';
+} // destructor for Shallow s is called here
+
+void display_deep(Deep d) // copy constructor is called here
+{
+	std::cout << d.get_data_value() << '\n';
+} // destructor for Deep d is called here
+
+void func_lvalue(int& num)
+{
+	std::cout << num << '\n';
+}
+
+void func_rvalue(int &&num)
+{
+	std::cout << num << '\n';
+}
+
 // OOP
 void Section13()
 {
@@ -1765,6 +1788,7 @@ void Section13()
 
 	jimmy.talk("I'm gonna kill you!");
 	enemy->talk("Try your worst!");
+	enemy->get_name();
 
 	delete enemy; // Destructor called
 
@@ -1797,5 +1821,56 @@ void Section13()
 	std::cout << "the_copier is called " << the_copier.get_name() << '\n';
 
 	std::cout << "-----------------------------------------------\n";
+
+	// Shallow vs Deep copy constructors
+	
+
+	//Shallow obj1{ 100 };
+	//display_shallow(obj1); // copy constructor called for function -> problem, data in obj1 will point to invalid memory 
+	// will crash once destructor for Shallow is called!
+	//Shallow obj2(obj1);
+	//obj2.set_data_value(1000); // This also changes data for obj1 since they both point to same part of memory
+
+	Deep obj1{ 100 };
+	display_deep(obj1); // This will now run correctly as they are unique parts of the memory
+	Deep obj2{ obj1 };
+	obj2.set_data_value(1000);
+
+	std::cout << "-----------------------------------------------\n";
+
+	// Move Constructors
+	int x{ 100 };
+	int& l_ref = x;    // l-value reference
+	l_ref = 10;        // change x to 10
+
+	int&& r_ref = 200; // r-value ref
+	r_ref = 300;       // change r_ref to 300
+
+	//int&& x_ref = x; // Compile error
+
+	func_lvalue(l_ref);
+	//func_lvalue(200); // Error - only take L-values
+
+	//func_rvalue(l_ref); // Error - only take R-values
+	func_rvalue(200);
+
+	std::vector<Move> vec;
+
+	// Constructor for Move(int) is called
+	// then move constructor is used for vec as Move{10} is an R-value
+	// No more deep copies then destroying data - inefficient 
+	vec.push_back(Move{ 10 }); 
+	vec.push_back(Move{ 20 }); 
+	vec.push_back(Move{ 30 }); 
+	vec.push_back(Move{ 40 }); 
+	vec.push_back(Move{ 50 }); 
+	vec.push_back(Move{ 60 }); 
+	vec.push_back(Move{ 70 }); 
+	vec.push_back(Move{ 80 }); 
+
+	std::cout << "-----------------------------------------------\n";
+
+	const Player villain{ "Villain", 100, 55 };
+	
 
 } // All destructors called
