@@ -2,6 +2,7 @@
 #include "Calculator.h" // These are directives (or preprocessor directive) -> includes (copies) the contents of these files to be compiled
 #include "io.h"
 #include "Section11.h"
+#include "Section12.h"
 #include <iostream>     // Angled brackets for header files we didn't make. Quotes does files we make.
 #include <cstdint>      // for int_least#_t
 #include <iomanip>      // for output manipulator std::setprecision()
@@ -56,7 +57,10 @@ int main()
 	//Section10_Assignment();
 
 	//Section11();
-	Section11_Challenge();
+	//Section11_Challenge();
+
+	//Section12();
+	Section12_Challenge();
 
 	return 0;
 }
@@ -1382,3 +1386,307 @@ void Section11_Challenge()
 	while (choice != 'Q' && choice != 'q');
 }
 
+// Pointers and References
+void Section12()
+{
+	/*
+	*  address-of operator & and dereference operator * acts as opposites
+	*  & gets the address of an object
+	*  * gets the objects at an address
+	*  type* -> address that stores object of type type
+	*/
+
+	// Always initialize pointers before you use them
+	// variable_type* pointer_name;
+	//int* int_ptr;                   // pointer to an integer -> will contain garbage data as it is unintialized
+	double* double_ptr{nullptr};      // pointer to a double
+	char* char_ptr{nullptr};          // pointer to a char
+	std::string* string_ptr{nullptr}; // pointer to a C++ style string
+
+	std::cout << "Value of double_ptr is: " << double_ptr << '\n';
+	std::cout << "sizeof double_ptr is: " << double_ptr << '\n'; // pointers are all size 4
+
+	int num{ 10 };
+	std::cout << "Value of num is: " << num << '\n';
+	std::cout << "sizeof num is: " << sizeof num << '\n';
+	std::cout << "Address of num is: " << &num << '\n';
+
+	int score{ 100 };
+	double high_temp{ 100.7 };
+	double low_temp{ 37.2 };
+
+	int* score_ptr{ nullptr };
+	double* temp_ptr{ nullptr };
+
+	score_ptr = &score;
+	//score_ptr = &high_temp; // compile error - can't assign pointer for doube to pointer for int
+
+	temp_ptr = &high_temp; // points to high temp
+	temp_ptr = &low_temp;  // points to low temp
+
+	temp_ptr = nullptr;
+
+	std::vector<std::string>* vector_string_pointer{ nullptr };
+	std::cout << "sizeof vector_string_pointer is: " << sizeof vector_string_pointer << '\n';
+	std::cout << "sizeof temp_ptr is: " << sizeof temp_ptr << '\n';
+
+	std::cout << "Value of score is: " << score << '\n';
+	std::cout << "Address of score is: " << &score << '\n';
+	std::cout << "Value of score_ptr is: " << score_ptr << '\n'; // should equal to the above line
+
+	std::cout << "-----------------------------------------------\n";
+
+	// dereferencing a pointer -> access the data it points at
+	std::cout << "Value of score at score_ptr is: " << *score_ptr << '\n';
+	// I.e get the integer that score_ptr is pointing to and make it 200
+	*score_ptr = 200; // Set the value the address is pointing to, to 200. 
+	std::cout << "Value of score is at score_ptr is: " << *score_ptr << '\n';
+	std::cout << "Value of score is: " << score << '\n';
+
+	temp_ptr = &high_temp;
+	std::cout << "Value that temp_ptr is pointing to is: " << *temp_ptr << '\n';
+	temp_ptr = &low_temp;
+	std::cout << "Value that temp_ptr is pointing to is: " << *temp_ptr << '\n';
+
+	std::string name{ "Frank" };
+	std::string* string_ptr2{ &name };
+
+	std::cout << *string_ptr2 << '\n';
+	name = "James";
+	std::cout << *string_ptr2 << '\n';
+
+	std::cout << "-----------------------------------------------\n";
+
+
+	// Dynamic Memory Allocation
+	/*
+	*  Allocate an integer onto the heap with new int
+	*  Allocated data will contain garbage (some random integer)
+	*  Only way to access it is via the pointer
+	*/
+	int* int_ptr{ nullptr };
+	int_ptr = new int;
+	
+	std::cout << int_ptr << '\n'; // some address
+	std::cout << *int_ptr << '\n'; // some random integer
+
+	*int_ptr = 100;
+
+	std::cout << *int_ptr << '\n'; // 100
+
+	delete int_ptr; // free up allocated storage after we're done. Make sure the deleted storage was one we allocated with new
+
+	// allocate storage for an array
+	int* array_ptr{ nullptr };
+	int size{5}; // array of size 5
+
+	array_ptr = new int[size]; // allocate array on the heap
+
+	delete[] array_ptr; // release the memory back onto the heap
+
+	// pointer to an array and array name can almost always be used interchangeably
+	int scores[]{ 100, 95, 99, 89, -1 };
+	std::cout << scores << '\n';  // print address
+	std::cout << *scores << '\n'; // prints the object at the address of scores i.e the first item 100
+
+	int* scores_ptr{ scores };
+	std::cout << scores_ptr << '\n';  // same address as above
+	std::cout << *scores_ptr << '\n'; // same item as above
+
+	std::cout << scores_ptr[0] << " is the same as " << scores[0] << '\n';
+	std::cout << scores_ptr[1] << " is the same as " << scores[1] << '\n';
+	std::cout << scores_ptr[2] << " is the same as " << scores[2] << '\n';
+
+	/*
+	*  Show address of first item
+	*  Show address of second item 
+	*  Adding 1 does not add 1 to the address, it adds size of 1 integer to the address
+	*  So it adds 4 byte as the next integer is 4 bytes away
+	*/
+
+	std::cout << "Size of integer is: " << sizeof score << '\n';
+
+	std::cout << "Address of 1st item in array: " << scores_ptr << '\n';   
+	std::cout << "Address of 2nd item in array: " << (scores_ptr + 1) << '\n'; // 4 more than the previous
+	std::cout << "Address of 3rd item in array: " << (scores_ptr + 2) << '\n'; // 4 more than the previous
+
+	// Will do the same thing since scores array is already the address
+	std::cout << "Value at " << scores_ptr << " is " << *scores << '\n';
+	std::cout << "Value at " << (scores_ptr + 1) << " is " << *(scores + 1) << '\n';
+	std::cout << "Value at " << (scores_ptr + 2) << " is " << *(scores + 2) << '\n';
+
+
+	std::cout << "-----------------------------------------------\n";
+
+	// Pointer Arithmetic
+	
+	/*
+	*  Only makes sense for raw arrays
+	*  ++ increments the pointer to the next item in the address (for int, it moves by 4 bytes)
+	*  -- decrements the pointer to the previuos item in the address (for int, it moves by 4 bytes)
+	*/
+	
+	while (*scores_ptr != -1)
+	{
+		std::cout << *scores_ptr << '\n';
+		scores_ptr++; 
+	}
+
+	scores_ptr = scores;
+
+	// does the same as above
+	while (*scores_ptr != -1)
+	{
+		std::cout << *scores_ptr++ << '\n'; // increments the pointer, not the pointer value
+	}
+
+	std::string s1{ "Frank" };
+	std::string s2{ "Frank" };
+	std::string s3{ "Jimmy" };
+
+	std::string* p1{ &s1 };
+	std::string* p2{ &s2 };
+	std::string* p3{ &s1 };
+
+	std::cout << std::boolalpha;
+	std::cout << p1 << "==" << p2 << ": " << (p1 == p2) << '\n';      // false as they point to different addresses
+	std::cout << p1 << "==" << p3 << ": " << (p1 == p3) << '\n';      // true as they point to the same address
+	std::cout << *p1 << "==" << *p2 << ": " << (*p1 == *p2) << '\n';  // true as we are comparing the same values
+	std::cout << *p1 << "==" << *p2 << ": " << (*p1 == *p3) << '\n';  
+
+	p3 = &s3;
+	std::cout << *p1 << "==" << *p3 << ": " << (*p1 == *p3) << '\n';  // now false as p3 points to different address
+
+	std::string stuffs[] {"Jimmy", "Barry", "Andy", "Karry", "Jameson"};
+
+	std::string* name_ptr1{ nullptr };
+	std::string* name_ptr2{ nullptr };
+
+	name_ptr1 = &stuffs[0]; // Jimmy
+	name_ptr2 = &stuffs[3]; // Karry
+
+	// Use pointer1 - pointer2 to find the distance in the stack between the two items
+	std::cout << "In the array, " << *name_ptr2 << " is " << (name_ptr2 - name_ptr1) << " items away from " << *name_ptr1 << '\n';
+
+	// pointers to constants
+	int high_score{ 100 };
+	int low_score{ 65 };
+	const int* some_score_ptr{ &high_score }; // pointer itself can change, but data pointed at cannot be changed
+	//*some_score_ptr = 86; // Error 
+	some_score_ptr = &low_score;
+
+	// constant pointers
+	int* const const_score_ptr{ &high_score }; // pointer itself is constant, but data pointed at can change
+	*const_score_ptr = 86; // okay
+	//const_score_ptr = &low_score; // Error
+
+	// constant pointer to constant
+	const int* const const_score_const_ptr{ &high_score }; // pointer and data are both constant
+	//*const_score_const_ptr = 86; // Error
+    //const_score_const_ptr = &low_score; // Error
+
+	std::cout << "-----------------------------------------------\n";
+	
+	int value{ 10 };
+	std::cout << value << '\n';
+	double_data(&value); // double the data stored at the address of value
+	std::cout << value << '\n';
+	double_data(&value); // double the data again stored at the address of value
+	std::cout << value << '\n';
+
+	int x{ 100 };
+	int y{ 200 };
+	std::cout << "x is: " << x << '\n';
+	std::cout << "y is: " << y << '\n';
+
+	swap_12(&x, &y);
+
+	std::cout << "x is: " << x << '\n';
+	std::cout << "y is: " << y << '\n';
+
+	std::cout << "-----------------------------------------------\n";
+
+	std::vector<std::string> stooges{ "Larry", "Moe", "Curly" };
+	display(&stooges);
+
+	int scores2[]{ 100, 99, 48, 43, 53, 86, -1 };
+	display(scores2, -1);
+
+	x = 100;
+	y = 200;
+
+	int* largest_ptr{ nullptr };
+	largest_ptr = largest_int(&x, &y);
+	std::cout << *largest_ptr << '\n';
+
+	int* my_array; // to be allocated by the function
+	my_array = create_array(100, 20); // create array with size 100 and values 20
+	
+	// do array stuff
+	my_array[15] = -1;
+	display(my_array, -1);
+	
+	delete[] my_array; // release memory
+
+	for (auto str : stooges) // adding const str will result in compile error
+		str = "Funny"; // this changes a COPY of the vector element
+
+	for (auto str : stooges)
+		std::cout << str << '\n'; // Larry Moe Curly
+
+	for (auto& str : stooges) // address-of operator
+		str = "Funny"; // this changes the actual vector element
+
+	for (auto str : stooges)
+		std::cout << str << '\n'; // Funny Funny Funny
+
+	std::cout << "-----------------------------------------------\n";
+
+	/*
+	*  L-values - values that have names and are addressable
+	*  They are modifiable if not constant
+	* 
+	*  R-values - anything that's not an L-value
+	*/
+
+	int paul{ 100 }; // paul is an L-value
+	paul = 1000;
+	paul = 2000 + 20;
+
+	std::string jason; // jason is an L-value
+	jason = "Frank";
+
+	//100 = x;         // 100 is not an L-value. not addressable
+	//"Frank" = jason; // "Frank" is not an L-value, not addressable
+
+	int& ref1 = paul; // ref1 is reference to L-value
+	ref1 = 1000;
+	std::cout << ref1 << '\n';
+
+	//int& ref2 = 100; // Error, 100 is an R-value
+
+	int num_something{ 10 };
+	square(num); // okay
+	//square(5); // Error - 5 is not an L-value
+}
+
+void Section12_Challenge()
+{
+	const size_t array1_size{ 5 };
+	const size_t array2_size{ 3 };
+
+	int array1[]{ 1, 2, 3, 4, 5 };
+	int array2[]{ 10, 20, 30 };
+	
+	// careful of duplicate array names -> need to be clear
+	std::cout << "Array 1: ";
+	print_array_12(array1, array1_size);
+	std::cout << "Array 2: ";
+	print_array_12(array2, array2_size);
+
+	int* results = apply_all(array1, array1_size, array2, array2_size);
+	constexpr size_t result_size{ array1_size * array2_size };
+
+	std::cout << "Result: ";
+	print_array_12(results, result_size);
+}

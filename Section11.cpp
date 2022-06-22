@@ -57,6 +57,7 @@ void print_vector(std::vector<int> v)
 }
 
 // Pass by const reference - vector will not be copied over and it cannot be changed 
+// The & is the addres-of operator
 void print_vector_ref(const std::vector<int>& v)
 {
 	for (auto num : v)
