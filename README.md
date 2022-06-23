@@ -22,4 +22,6 @@ For personal projects, I will aim to create the following console apps:
 
 Areas of understanding that needs improvements:
 
+- Manipulating raw pointers
+
 - Using Constructors (Deep/Shallow copy, Move)
