@@ -19,3 +19,7 @@ For personal projects, I will aim to create the following console apps:
 - Hangman using random word from text file
 
 - Tic Tac Toe 
+
+Areas of understanding that needs improvements:
+
+- Using Constructors (Deep/Shallow copy, Move)
