@@ -134,6 +134,8 @@
     <ClCompile Include="HelloWorld.cpp" />
     <ClCompile Include="io.cpp" />
     <ClCompile Include="Move.cpp" />
+    <ClCompile Include="Movie.cpp" />
+    <ClCompile Include="Movies.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Section11.cpp" />
     <ClCompile Include="Section12.cpp" />
@@ -145,6 +147,8 @@
     <ClInclude Include="HelloWorld.h" />
     <ClInclude Include="io.h" />
     <ClInclude Include="Move.h" />
+    <ClInclude Include="Movie.h" />
+    <ClInclude Include="Movies.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Section11.h" />
     <ClInclude Include="Section12.h" />

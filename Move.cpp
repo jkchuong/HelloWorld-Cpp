@@ -25,6 +25,7 @@ Move::Move(const Move& source) : Move{*source.data}
 }
 
 // Move Constructor
+// && - r-value
 // Equivalent to shallow copy except we null out source pointer
 Move::Move(Move&& source) noexcept : data{source.data} // copy source pointer to new pointer
 {

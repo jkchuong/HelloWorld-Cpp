@@ -7,6 +7,8 @@
 #include "Shallow.h"
 #include "Deep.h"
 #include "Move.h"
+#include "Movie.h"
+#include "Movies.h"
 #include <iostream>     // Angled brackets for header files we didn't make. Quotes does files we make.
 #include <cstdint>      // for int_least#_t
 #include <iomanip>      // for output manipulator std::setprecision()
@@ -66,7 +68,8 @@ int main()
 	//Section12();
 	//Section12_Challenge();
 
-	Section13();
+	//Section13();
+	Section13_Challenge();
 
 	return 0;
 }
@@ -1759,9 +1762,20 @@ void func_rvalue(int &&num)
 	std::cout << num << '\n';
 }
 
+void display_player_name(const Player& p)
+{
+	std::cout << p.get_name() << '\n';
+}
+
+void display_active_players()
+{
+	std::cout << "Active players: " << Player::get_num_players() << '\n';
+}
+
 // OOP
 void Section13()
 {
+	display_active_players();
 	Player jimmy;
 	Player hero;
 	Player andy{ "Andy", 10, 10 };
@@ -1774,9 +1788,10 @@ void Section13()
 	jimmy.set_name("Jimmy");
 	hero.set_name("Hero");
 
-	Player players[]{ jimmy, hero };
-	std::vector<Player> players_vec{ jimmy };
-	players_vec.push_back(hero);
+	// Issue here with using copy constructors?
+	//Player players[]{ jimmy, hero };
+	//std::vector<Player> players_vec{ jimmy };
+	//players_vec.push_back(hero);
 
 	Player* enemy{ nullptr };
 	enemy = new Player;
@@ -1796,6 +1811,8 @@ void Section13()
 	enemy2 = new Player("Enemy", 1000, 0);
 	delete enemy2; // Destructor called
 
+	display_active_players();
+
 	std::cout << "-----------------------------------------------\n";
 
 	{
@@ -1803,6 +1820,8 @@ void Section13()
 		Player slayer("Slayer1");
 		Player slayer2("Slayer2", 10);
 		Player slayer3("Slayer3", 10, 100);
+		display_active_players();
+
 	} // Destructors called in reverse order they were created
 
 	std::cout << "-----------------------------------------------\n";
@@ -1819,6 +1838,8 @@ void Section13()
 	std::cout << "to_be_copied is called " << to_be_copied.get_name() << '\n';
 	Player the_copier{ to_be_copied };
 	std::cout << "the_copier is called " << the_copier.get_name() << '\n';
+	
+	display_active_players();
 
 	std::cout << "-----------------------------------------------\n";
 
@@ -1871,6 +1892,32 @@ void Section13()
 	std::cout << "-----------------------------------------------\n";
 
 	const Player villain{ "Villain", 100, 55 };
-	
+	Player heroine{ "Heroine", 100, 15 };
+	//villain.set_name("Vile"); // Error - can't change villain attributes
+	std::cout << villain.get_name() << '\n'; // Fine, since get name is declared const
+	display_player_name(heroine);
+	display_active_players();
+
+	std::cout << "-----------------------------------------------\n";
 
 } // All destructors called
+
+// Movie and movies
+void Section13_Challenge()
+{
+	Movies my_movies;
+	my_movies.display_movies();
+
+	my_movies.create_movie("John Wick", Movie::Rating::R);
+	my_movies.display_movies();
+	my_movies.add_movie("Teletubbies", Movie::Rating::PG, 5400);
+	my_movies.display_movies();
+	my_movies.display_movies();
+	my_movies.watch_movie("John Wick");
+
+	// Negative cases
+	my_movies.watch_movie("John Wack");
+	my_movies.create_movie("John Wick", Movie::Rating::R);
+	my_movies.create_movie("Teletubbies", Movie::Rating::R);
+	my_movies.add_movie("John Wick", Movie::Rating::G, 20);
+}

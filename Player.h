@@ -15,6 +15,7 @@ private:
 	std::string name{"Default Name"}; // default values
 	int health{0};
 	int xp{0};
+	static int num_players;
 
 public:
 	std::string get_name() const; // const -> method will not change const objects
@@ -23,8 +24,9 @@ public:
 	void add_xp(int xp_to_add);
 	int get_health() const;
 	bool is_dead();
+	static int get_num_players();
 
-	// Constructor
+	// Constructors and Overloaded Constructors
 	Player();
 	Player(std::string name);
 	Player(std::string name, int health);
