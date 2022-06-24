@@ -14,6 +14,6 @@ public:
 	void create_movie(std::string name, Movie::Rating rating);
 	void add_movie(std::string name, Movie::Rating rating, int watched);
 	void watch_movie(std::string name);
-	const void display_movies();
+	void display_movies() const;
 };
 

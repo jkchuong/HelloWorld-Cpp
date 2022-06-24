@@ -102,7 +102,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -117,7 +117,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -136,6 +136,7 @@
     <ClCompile Include="Move.cpp" />
     <ClCompile Include="Movie.cpp" />
     <ClCompile Include="Movies.cpp" />
+    <ClCompile Include="Mystring.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Section11.cpp" />
     <ClCompile Include="Section12.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="Move.h" />
     <ClInclude Include="Movie.h" />
     <ClInclude Include="Movies.h" />
+    <ClInclude Include="Mystring.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Section11.h" />
     <ClInclude Include="Section12.h" />

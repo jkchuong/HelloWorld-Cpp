@@ -4,11 +4,11 @@
 class Deep
 {
 private:
-	int* data;  // Pointer
+	int* data;  // Pointer - only really need this when class contains pointer attributes
 
 public:
 	Deep(int d);               // Constructor
-	Deep(const Deep& source);  // Copy Constructor
+	Deep(const Deep& source);  // Deep Copy Constructor
 	~Deep();                   // Destructor 
 
 	void set_data_value(int d);

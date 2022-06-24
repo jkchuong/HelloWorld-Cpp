@@ -48,6 +48,9 @@
     <ClCompile Include="Movies.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mystring.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HelloWorld.h">
@@ -81,6 +84,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Movies.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mystring.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

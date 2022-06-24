@@ -9,6 +9,7 @@
 #include "Move.h"
 #include "Movie.h"
 #include "Movies.h"
+#include "Mystring.h"
 #include <iostream>     // Angled brackets for header files we didn't make. Quotes does files we make.
 #include <cstdint>      // for int_least#_t
 #include <iomanip>      // for output manipulator std::setprecision()
@@ -69,7 +70,9 @@ int main()
 	//Section12_Challenge();
 
 	//Section13();
-	Section13_Challenge();
+	//Section13_Challenge();
+
+	Section14();
 
 	return 0;
 }
@@ -1920,4 +1923,32 @@ void Section13_Challenge()
 	my_movies.create_movie("John Wick", Movie::Rating::R);
 	my_movies.create_movie("Teletubbies", Movie::Rating::R);
 	my_movies.add_movie("John Wick", Movie::Rating::G, 20);
+}
+
+// Overloading Operators 
+void Section14()
+{
+	Mystring empty;            // no-args constructor
+	Mystring larry{ "Larry" }; // overload constructor
+	Mystring stooge{ larry };  // copy constructor
+
+	empty.display();
+	larry.display();
+	stooge.display();
+
+	Mystring s1{ "Frank" };
+	Mystring s2 = s1; // NOT assignment - same as Mystring s2{s1}
+	Mystring s3;
+
+	// copy assignment
+	s3 = s1; // b.operator=(a)
+	s1 = s2;
+	s2 = s3;
+
+	// move assignment
+	s3 = "This is a test"; // b.operator=("This is a test");
+
+	Mystring hello{ "Hello" };  // Overloaded constructor
+	hello = Mystring{ "Hola" }; // Overloaded constructor then move assignment
+	hello = "Bonjour";          // Overloaded constructor then move assignment
 }

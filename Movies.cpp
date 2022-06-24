@@ -47,7 +47,7 @@ void Movies::watch_movie(std::string name)
 	std::cout << "\n========================================================\n";
 }
 
-const void Movies::display_movies()
+void Movies::display_movies() const
 {
 	if (movies.size() <= 0)
 	{
@@ -60,6 +60,7 @@ const void Movies::display_movies()
 			std::cout << movie.name << ", " << movie.rating << ", watched " << movie.watched << " times \n"; 
 		}
 	}
+
 	std::cout << "\n========================================================\n";
 }
 
