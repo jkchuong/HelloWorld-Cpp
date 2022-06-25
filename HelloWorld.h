@@ -36,3 +36,7 @@ void Section13();
 void Section13_Challenge();
 
 void Section14();
+
+void Section15();
+
+void Section16();

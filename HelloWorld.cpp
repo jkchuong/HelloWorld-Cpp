@@ -10,6 +10,8 @@
 #include "Movie.h"
 #include "Movies.h"
 #include "Mystring.h"
+#include "Account.h"
+#include "Savings_Account.h"
 #include <iostream>     // Angled brackets for header files we didn't make. Quotes does files we make.
 #include <cstdint>      // for int_least#_t
 #include <iomanip>      // for output manipulator std::setprecision()
@@ -72,7 +74,9 @@ int main()
 	//Section13();
 	//Section13_Challenge();
 
-	Section14();
+	//Section14();
+
+	Section15();
 
 	return 0;
 }
@@ -1703,7 +1707,7 @@ void Section12_Challenge()
 	print_array_12(results, result_size);
 }
 
-class Account
+class Account13
 {
 private:
 	// Attributes
@@ -1725,22 +1729,22 @@ public:
 	}
 
 	// Constructors
-	Account(){ };
-	Account(std::string name, double balance){ };
-	Account(std::string name){ };
-	Account(double balance){ };
+	Account13(){ };
+	Account13(std::string name, double balance){ };
+	Account13(std::string name){ };
+	Account13(double balance){ };
 
 	// Destructor
-	~Account(){ };
+	~Account13(){ };
 };
 
 // implementing memeber methods outside of class declaration
-void Account::set_balance(double bal)
+void Account13::set_balance(double bal)
 {
 	balance = bal;
 }
 
-double Account::get_balance()
+double Account13::get_balance()
 {
 	return balance;
 }
@@ -1829,7 +1833,7 @@ void Section13()
 
 	std::cout << "-----------------------------------------------\n";
 
-	Account jimmy_account;
+	Account13 jimmy_account;
 	//jimmy_account.name = "Frank's accouint";
 	//jimmy_account.balance = 50000.0;
 	jimmy_account.deposit(800);
@@ -1925,6 +1929,19 @@ void Section13_Challenge()
 	my_movies.add_movie("John Wick", Movie::Rating::G, 20);
 }
 
+// Operator Overloading as global function
+// Similar to overloaded member function except we have lhs instead of this 
+// This works because we have friend keywork in Mystring.h
+Mystring operator+(const Mystring& lhs, const Mystring& rhs)
+{
+	char* buff = new char[std::strlen(lhs.get_str()) + std::strlen(rhs.get_str()) + 1];
+	std::strcpy(buff, lhs.get_str());
+	std::strcat(buff, rhs.get_str());
+	Mystring temp{ buff };
+	delete[] buff;
+	return temp;
+}
+
 // Overloading Operators 
 void Section14()
 {
@@ -1951,4 +1968,134 @@ void Section14()
 	Mystring hello{ "Hello" };  // Overloaded constructor
 	hello = Mystring{ "Hola" }; // Overloaded constructor then move assignment
 	hello = "Bonjour";          // Overloaded constructor then move assignment
+
+	std::cout << "==========================================\n";
+
+	// other operators
+	s1 = "S1";
+	s2 = "S2";
+	s3 = "S1";
+
+	s1.display();
+	s1 = -s1; // unary minus
+	s1.display();
+
+	std::cout << (s1 == s2) << '\n'; // comparison
+	std::cout << (s1 == s3) << '\n';
+
+	s3 = s1 + s2;
+	s3.display();
+
+	s1 = "Moe" + s3; // Will only work with overloaded global function
+	s1.display();
+	s1 = s3 + "Moe"; // OK, can add Moe from the left
+	s1.display();
+
+	std::cout << "==========================================\n";
+
+	Mystring jimmy{ "Jimmy" };
+	Mystring andy{ "Andy" };
+	Mystring ruby;
+
+	std::cout << "Enter the third stooge's first name ";
+	std::cin >> ruby;
+
+	std::cout << "The three stooges are " << jimmy << ", " << andy << ", and " << ruby << '\n';
+	std::cout << "Enter the three stooges names separated by a space: ";
+	std::cin >> jimmy >> andy >> ruby;
+	std::cout << "The three stooges are " << jimmy << ", " << andy << ", and " << ruby << '\n';
+}
+
+// Public Inheritance (no private or protected inheritance)
+void Section15()
+{
+	std::cout << "\n================== Account ==================\n\n";
+	Account acc{};
+	acc.deposit(2000);
+	acc.withdraw(500);
+
+	std::cout << '\n';
+
+	Account* p_acc{ nullptr };
+	p_acc = new Account();
+	p_acc->deposit(1000);
+	p_acc->withdraw(500);
+	delete p_acc;
+	
+	std::cout << "\n======================= double Parameter =========================\n\n";
+	Account acc_2{ 3.6 };
+	acc.deposit(2000);
+	acc.withdraw(500);
+
+	std::cout << "\n======================= string Parameter =========================\n\n";
+	Account acc_3{ "Johnson" };
+	acc.deposit(2000);
+	acc.withdraw(500);
+
+	std::cout << "\n================== Savings Account ==================\n\n";
+	// Account (Base class) is created before Savings Account (Derived class)
+	Savings_Account sav_acc{};
+	sav_acc.deposit(2000);
+	sav_acc.withdraw(500);
+
+	std::cout << '\n';
+
+	Savings_Account* p_sav_acc{ nullptr };
+	p_sav_acc = new Savings_Account();
+	p_sav_acc->deposit(1000);
+	p_sav_acc->withdraw(500);
+	delete p_sav_acc; // Savings Account is destroyed before Account 
+
+	Account* p = new Savings_Account();
+	p->deposit(1000); // Will call Account::withdraw(), should be Savings_Account::withdraw() - Use Polymorphism
+
+	std::cout << "\n====================== double Parameter ==========================\n\n";
+	Savings_Account sav_acc_2{ 1.1 }; // will call no args base class constructor 
+	sav_acc.deposit(2000);
+	sav_acc.withdraw(500);
+	
+	std::cout << "\n====================== string Parameter ==========================\n\n";
+	Savings_Account sav_acc_3{ "Kelly" }; // will call one-args string base class constructor 
+	sav_acc.deposit(2000);
+	sav_acc.withdraw(500);
+
+	std::cout << "\n====================== Copy Constructor/Assignment ==========================\n\n";
+	Account acc_4{ "Berthold" };
+	Account acc_5 = acc_4;   // Copy Constructor
+	acc_5 = acc;             // Copy Assignment
+
+
+	Savings_Account sav_acc_4{ 5.8 };
+	Savings_Account sav_acc_5{ sav_acc_4 }; // Copy Constructor
+	sav_acc_4 = sav_acc_3;                  // Copy Assignemnt
+
+	std::cout << "\n====================== Redfine Base Methods ==========================\n\n";
+	Account a1{ 2000 };
+	std::cout << a1 << '\n'; // Account balance: 2000
+	a1.deposit(800);
+	std::cout << a1 << '\n'; // Account balance: 2800
+	a1.withdraw(1000);
+	std::cout << a1 << '\n'; // Account balance: 1800
+	a1.withdraw(8000); // Not enough funds
+	std::cout << a1 << '\n'; // Account balance: 1800
+
+	std::cout << "\n\n\n";
+
+	Savings_Account s1{ 10.1 };
+	std::cout << s1 << '\n';
+	s1.deposit(1000);
+	std::cout << s1 << '\n'; // Account balance: 1101
+	s1.withdraw(500);
+	std::cout << s1 << '\n'; // Account balance: 601
+	s1.withdraw(8000); // Not enough funds
+	std::cout << s1 << '\n'; // Account balance: 601
+
+	std::cout << "\n================== End of scope ==================\n\n";
+
+}
+
+// Polymorphism
+void Section16()
+{
+
 }

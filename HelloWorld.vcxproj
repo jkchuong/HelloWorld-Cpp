@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Account.cpp" />
     <ClCompile Include="Calculator.cpp" />
     <ClCompile Include="Deep.cpp" />
     <ClCompile Include="HelloWorld.cpp" />
@@ -138,11 +139,13 @@
     <ClCompile Include="Movies.cpp" />
     <ClCompile Include="Mystring.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Savings_Account.cpp" />
     <ClCompile Include="Section11.cpp" />
     <ClCompile Include="Section12.cpp" />
     <ClCompile Include="Shallow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Account.h" />
     <ClInclude Include="Calculator.h" />
     <ClInclude Include="Deep.h" />
     <ClInclude Include="HelloWorld.h" />
@@ -152,6 +155,7 @@
     <ClInclude Include="Movies.h" />
     <ClInclude Include="Mystring.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Savings_Account.h" />
     <ClInclude Include="Section11.h" />
     <ClInclude Include="Section12.h" />
     <ClInclude Include="Shallow.h" />

@@ -109,3 +109,31 @@ bool Mystring::operator==(const Mystring& rhs) const
 	else
 		return false;
 }
+
+// Overloading binary add operator - i.e s1 + s2;
+//Mystring Mystring::operator+(const Mystring& rhs) const 
+//{
+//	char* buff = new char[std::strlen(str) + std::strlen(rhs.str) + 1];
+//	std::strcpy(buff, str);
+//	std::strcat(buff, rhs.str);
+//	Mystring temp{ buff };
+//	delete[] buff;
+//	return temp;
+//}
+
+// Overloading insertion operator
+std::ostream& operator<<(std::ostream& os, const Mystring& rhs)
+{
+	os << rhs.str;
+	return os;
+}
+
+// Overloading extraction operator
+std::istream& operator>>(std::istream& in, Mystring& rhs)
+{
+	char* buff = new char[1000]; // big char array to store whatever user inputs
+	in >> *buff; // ERROR HERE. SHOULD BE in >> buff; BUT DOESN'T WORK?
+	rhs = Mystring(buff);
+	delete[] buff;
+	return in;
+}
