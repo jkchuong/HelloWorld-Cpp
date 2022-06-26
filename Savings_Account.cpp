@@ -56,7 +56,25 @@ void Savings_Account::deposit(double amount)
 	Account::deposit(amount);
 }
 
-//void Savings_Account::withdraw(double amount)
-//{
-//	std::cout << "Savings Account withdraw called with " << amount << '\n';
-//}
+void Savings_Account::withdraw(double amount)
+{
+	std::cout << "Savings Account withdraw called with " << amount << '\n';
+
+
+	if (balance >= amount)
+		balance -= amount;
+	else
+		std::cout << "Not enough funds\n";
+}
+
+// has no const - will not be called due to redefinition of virtual function
+void Savings_Account::say_hello() 
+{
+	std::cout << "Savings_Account::say_hello\n";
+}
+
+// compile error without const now since we have override to unsure same signatures
+void Savings_Account::say_something() const 
+{
+	std::cout << "Savings_Account::say_something\n";
+}

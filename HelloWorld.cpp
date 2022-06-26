@@ -12,6 +12,10 @@
 #include "Mystring.h"
 #include "Account.h"
 #include "Savings_Account.h"
+#include "Shape.h"
+#include "Circle.h"
+#include "Square.h"
+#include "IPrintable.h"
 #include <iostream>     // Angled brackets for header files we didn't make. Quotes does files we make.
 #include <cstdint>      // for int_least#_t
 #include <iomanip>      // for output manipulator std::setprecision()
@@ -22,7 +26,8 @@
 #include <cctype>       // for character-based functions
 #include <cstring>      // Functions that work with C-style strings
 #include <cstdlib>      // General purpose functions e.g convert C-style strings to other types (int, float, long, rand etc)
-#include <ctime>        // required for time)_
+#include <ctime>        // required for time
+#include <memory>       // for smart pointers
 
 /*
 * Arrange as:
@@ -76,7 +81,14 @@ int main()
 
 	//Section14();
 
-	Section15();
+	//Section15();
+
+	//Section16();
+
+	//Section17();
+	Section17_Challenge();
+
+	
 
 	return 0;
 }
@@ -2046,7 +2058,7 @@ void Section15()
 	p_sav_acc->withdraw(500);
 	delete p_sav_acc; // Savings Account is destroyed before Account 
 
-	Account* p = new Savings_Account();
+	Account* p = new Savings_Account(); // pointer thinks it's pointing to just an Account
 	p->deposit(1000); // Will call Account::withdraw(), should be Savings_Account::withdraw() - Use Polymorphism
 
 	std::cout << "\n====================== double Parameter ==========================\n\n";
@@ -2094,8 +2106,395 @@ void Section15()
 
 }
 
-// Polymorphism
+void do_something_wrong(Account account)
+{
+	account.say_something();
+}
+
+void do_something(Account& account)
+{
+	account.say_something();
+}
+
+std::ostream& operator<<(std::ostream& os, const IPrintable& obj)
+{
+	obj.print(os);
+	return os;
+}
+
+void print(const IPrintable& obj)
+{
+	std::cout << obj << '\n';
+}
+
+// Polymorphism - i.e virtual functions
 void Section16()
 {
+	std::cout << "\n==== Pointers ====\n\n";
+	Account* p1 = new Account();
+	Account* p2 = new Savings_Account();
 
+	p1->deposit(1000);
+	p2->deposit(1000); // deposit not marked as virtual, will use Account::deposit
+
+	p1->withdraw(100);
+	p2->withdraw(100); // withdraw marked as virtual, will use Savings_Account::withdraw
+
+	std::cout << "\n==== Redefinition ====\n\n";
+
+	p1->say_hello();
+	p2->say_hello(); // will use Account::say_hello due to redefinition
+	
+	std::cout << "\n==== Overriding ====\n\n";
+
+	// override ensures we override the virtual function, not redefine it
+	p1->say_something();
+	p2->say_something(); // will now use Savings_Account::say_something due override
+
+	std::cout << "\n==== Base Class References ==== \n\n";
+
+	Account a;
+	Account& ref = a;
+	ref.say_something();
+
+	Savings_Account s;
+	Account& ref1 = s;
+	ref1.say_something();
+
+	do_something_wrong(a); 
+	do_something_wrong(s); // This will use Account::say_something
+
+	do_something(a);
+	do_something(s); // This wil use Savings_Account::say_something
+
+	std::cout << "\n==== Abstract Class ==== \n\n";
+
+	//Shape p;                // Compile error - cannot instantiate abstract class
+	//Shape* p = new Shape(); // Compile error - cannot instantiate abstract class
+
+	Shape* ptr = new Circle();
+	ptr->draw();
+	ptr->rotate();
+
+	Shape* s1 = new Circle();
+	Shape* s2 = new Square();
+
+	std::vector<Shape*> shapes{ s1, s2};
+	for (const auto p : shapes)
+		p->draw();
+
+	std::cout << "\n==== Interfaces ==== \n\n";
+	
+	std::cout << *s1 << '\n'; // Using IPrintable to print these things
+	std::cout << *s2 << '\n';
+
+	print(*s1);
+	print(*s2);
+
+	std::cout << "\n======================\n\n";
+
+	delete s1;
+	delete s2;
+	delete ptr;
+	delete p1; 
+	delete p2;
+}
+
+class B; // forward declaration
+class B_Weak;
+
+class A
+{
+	std::shared_ptr<B> b_ptr;         // make weak to break strong circular reference
+	std::weak_ptr<B_Weak> b_weak_ptr; // now there will be no memory leak
+public:
+	void set_B(std::shared_ptr<B>& b)
+	{
+		b_ptr = b;
+	}
+
+	void set_B_weak(std::shared_ptr<B_Weak>& b)
+	{
+		b_weak_ptr = b;
+	}
+
+	A() { std::cout << "A Constructor" << '\n'; }
+	~A() { std::cout << "A Destructor" << '\n'; }
+};
+
+class B
+{
+	std::shared_ptr<A> a_ptr;
+public:
+	void set_A(std::shared_ptr<A>& a)
+	{
+		a_ptr = a;
+	}
+
+	B() { std::cout << "B Constructor" << '\n'; }
+	~B() { std::cout << "B Destructor" << '\n'; }
+};
+
+class B_Weak
+{
+	std::shared_ptr<A> a_ptr;
+public:
+	void set_A(std::shared_ptr<A>& a)
+	{
+		a_ptr = a;
+	}
+
+	B_Weak() { std::cout << "B_Weak Constructor" << '\n'; }
+	~B_Weak() { std::cout << "B_Weak Destructor" << '\n'; }
+};
+
+class Test
+{
+private:
+	int data;
+
+public:
+	Test() : data{0} { std::cout << "Test Constructor: " << data << '\n'; }
+	Test(int data) : data{data} { std::cout << "Test Constructor: " << data << '\n'; }
+	int get_data() const { return data; }
+	~Test() { std::cout << "Test Destructor: " << data << '\n'; }
+};
+
+void my_deleter(Test* ptr)
+{
+	std::cout << "Using my custom function deleter" << '\n';
+	delete ptr;
+}
+
+// Smart pointers
+void Section17()
+{
+	std::cout << "\n====== unique pointers ======\n\n";
+
+	/*
+	*  unique_ptr
+	*  Points to an object on the heap
+	*  Unique - can only be one pointing to the object
+	*  Owns the object it points to
+	*  Cannot be assigned or copied
+	*  Can be moved
+	*  When destroyed, also destroyed what it points to
+	*/
+
+
+	{
+		std::unique_ptr<int> p1{ new int {100} };
+		std::cout << *p1 << '\n';
+		*p1 = 200;
+		std::cout << *p1 << '\n';
+		std::cout << p1.get() << '\n'; // Gets the address
+		p1.reset(); // now nullptr
+		std::cout << p1.get() << '\n'; // Gets the address
+
+		if (p1)
+			std::cout << *p1 << '\n'; // won't execute
+	} // automatically deleted here
+
+	std::unique_ptr<Account> p1{ new Account{"Jimmy"} };
+	std::cout << *p1 << '\n';
+
+	p1->deposit(1000);
+	p1->withdraw(200);
+
+	std::vector<std::unique_ptr<int>> vec;
+	std::unique_ptr<int> ptr{ new int {100} };
+	//vec.push_back(ptr); // ERROR - copy not allowed!
+	vec.push_back(std::move(ptr));
+
+	// better way to make unique pointers - no new or delete
+	std::unique_ptr<int> p2 = std::make_unique<int>(100); 
+	std::unique_ptr<Account> p3 = std::make_unique<Account>("Jimmy");
+	auto p4 = std::make_unique<Player>("Hero", 100, 100);
+	auto p5 = std::make_unique<Player>("Jimmy", 100, 100);
+
+	//p4 = p5; // ERROR - cannot be assigned
+	p4 = std::move(p5); // Fine - moving ownership is okay - issues with counting number of players though
+
+	if (!p5)
+		std::cout << "p5 is nullptr\n";
+
+	std::vector<std::unique_ptr<Account>> accounts;
+
+	accounts.push_back(std::make_unique<Account>("Billiamson"));
+	accounts.push_back(std::make_unique<Savings_Account>("Jefferson"));
+	accounts.push_back(std::make_unique<Account>("Rodney"));
+	accounts.push_back(std::make_unique<Savings_Account>("Carling"));
+
+	//for (auto acc : accounts) // Error here since we can't copy
+	//	std::cout << *acc << '\n';
+
+	for (const auto& acc : accounts)
+		acc->say_something();
+
+	std::cout << "\n====== shared pointers ======\n\n";
+
+	/*
+	*  shared_ptr
+	*  Points to an object on the heap
+	*  Not unique, many shared_ptr to the same object on heap
+	*  Shared ownership relationship
+	*  CAN be assigned and copied and moved
+	*  Doesn't support managing arrays by default
+	*  Object on heap destroyed when use count is zero
+	*/
+
+	{
+		std::shared_ptr<int> p1{ new int {100} };
+		std::cout << *p1 << '\n';
+		*p1 = 200;
+		std::cout << *p1 << '\n';
+
+		std::cout << p1.use_count() << '\n'; // 1 shared_ptr managing heap object 
+		std::shared_ptr<int> p2 { p1 };      // shared ownership
+		std::cout << p1.use_count() << '\n'; // 2
+		std::cout << p2.use_count() << '\n'; // 2
+
+		p1.reset(); // decrement use_count and null out p1
+		std::cout << p1.use_count() << '\n'; // 0
+		std::cout << p2.use_count() << '\n'; // 1
+
+
+	} //automatically deleted here
+
+	std::shared_ptr<Account> s1{ new Savings_Account{"Jimothiy"}};
+	s1->say_something();
+
+	std::vector<std::shared_ptr<int>> ints;
+
+	std::shared_ptr<int> int_ptr{ new int {100} };
+	ints.push_back(int_ptr); // OK - copy is allowed for shared_ptr
+
+	std::cout << int_ptr.use_count() << '\n'; // 2 since we copied it into the vector
+
+	std::shared_ptr<int> int1 = std::make_shared<int>(100); // use_count: 1
+	std::shared_ptr<int> int2 = { int1 };                   // use_count: 2
+	std::shared_ptr<int> int3;
+	int3 = int2;                                            // use_count: 3
+
+	std::cout << int1.use_count() << '\n';
+
+	std::shared_ptr<Account> acc1 = std::make_shared<Savings_Account>(978.43);
+	std::shared_ptr<Account> acc2 = std::make_shared<Account>(87456923876.37);
+	std::shared_ptr<Account> acc3 = std::make_shared<Savings_Account>(274356.262);
+	std::shared_ptr<Account> acc4 = std::make_shared<Account>(54.0);
+
+	std::vector<std::shared_ptr<Account>> accounts2;
+	accounts2.push_back(acc1);
+	accounts2.push_back(acc2);
+	accounts2.push_back(acc3);
+	accounts2.push_back(acc4);
+
+	accounts2.push_back(acc1);
+	accounts2.push_back(acc2);
+	accounts2.push_back(acc3);
+	accounts2.push_back(acc4);
+
+	for (const auto& acc : accounts2)
+	{
+		acc->say_something();
+		std::cout << "Use count: " << acc.use_count() << '\n';
+	}
+
+	std::cout << "\n====== weak pointers ======\n\n";
+
+	/*
+	*  weak_ptr
+	*  Non-owning "weak" pointer
+	*  Points to an object on the heap
+	*  Does not participate in owning relationship
+	*  Always created from a shared_ptr
+	*  Does not increment or decrement reference use count
+	*  Used to prevent strong reference cycles which could prevent objects from being deleted
+	*/
+
+	{
+		std::shared_ptr<A> a = std::make_shared<A>();
+		std::shared_ptr<B> b = std::make_shared<B>();
+		a->set_B(b);
+		b->set_A(a); // establishing circular reference 
+	} // Destructors of A and B will not be called - Memory leak! 
+
+	std::cout << '\n';
+
+	{
+		std::shared_ptr<A> a = std::make_shared<A>();
+		std::shared_ptr<B_Weak> b = std::make_shared<B_Weak>();
+		a->set_B_weak(b);
+		b->set_A(a); // establishing circular reference 
+	} // Destructors will be called since we have a weak pointer
+
+	std::cout << "\n====== Custom Deleters ======\n\n";
+
+	// For when we want to do more than just destroy object on heap
+
+	{
+		std::shared_ptr<Test> ptr{ new Test{} };
+	} // using default destructor
+
+	{
+		std::shared_ptr<Test> ptr{ new Test{100}, my_deleter };
+	} // using custom deleter
+
+	
+	{
+		std::shared_ptr<Test> ptr(new Test{ 1000 },
+			[](Test* ptr) // [] is the lambda function
+			{
+				std::cout << "Using my custom lambda deleter\n";
+				delete ptr;
+			});
+	} // using lambda expression
+
+	std::cout << "\n======================\n\n";
+
+}
+
+// Can we shorten this?
+std::unique_ptr<std::vector<std::shared_ptr<Test>>> make(); 
+void fill(std::vector<std::shared_ptr<Test>>& vec, int num);
+void display(const std::vector<std::shared_ptr<Test>>& vec);
+
+
+void Section17_Challenge()
+{
+	std::unique_ptr<std::vector<std::shared_ptr<Test>>> vec_ptr;
+	vec_ptr = make();
+	std::cout << "How many data points do you want to enter: ";
+	int num;
+	std::cin >> num;
+	fill(*vec_ptr, num);
+	display(*vec_ptr);
+}
+
+std::unique_ptr<std::vector<std::shared_ptr<Test>>> make()
+{
+	return std::make_unique<std::vector<std::shared_ptr<Test>>>();
+}
+
+void fill(std::vector<std::shared_ptr<Test>>& vec, int num)
+{
+	for (int i{ 0 }; i < num; i++)
+	{
+		std::cout << "Enter data point " << i + 1 << ": ";
+		int input;
+		std::cin >> input;
+		vec.push_back(std::make_shared<Test>(input));
+	}
+}
+
+void display(const std::vector<std::shared_ptr<Test>>& vec)
+{
+	std::cout << "\nDisplaying vector data\n==================\n";
+
+	for (const auto& sp_test : vec)
+	{
+		std::cout << sp_test->get_data() << '\n';
+	}
+
+	std::cout << "==================\n";
 }

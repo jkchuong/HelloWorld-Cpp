@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="Account.cpp" />
     <ClCompile Include="Calculator.cpp" />
+    <ClCompile Include="Circle.cpp" />
     <ClCompile Include="Deep.cpp" />
     <ClCompile Include="HelloWorld.cpp" />
     <ClCompile Include="io.cpp" />
@@ -143,13 +144,17 @@
     <ClCompile Include="Section11.cpp" />
     <ClCompile Include="Section12.cpp" />
     <ClCompile Include="Shallow.cpp" />
+    <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="Square.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Account.h" />
     <ClInclude Include="Calculator.h" />
+    <ClInclude Include="Circle.h" />
     <ClInclude Include="Deep.h" />
     <ClInclude Include="HelloWorld.h" />
     <ClInclude Include="io.h" />
+    <ClInclude Include="IPrintable.h" />
     <ClInclude Include="Move.h" />
     <ClInclude Include="Movie.h" />
     <ClInclude Include="Movies.h" />
@@ -159,6 +164,8 @@
     <ClInclude Include="Section11.h" />
     <ClInclude Include="Section12.h" />
     <ClInclude Include="Shallow.h" />
+    <ClInclude Include="Shape.h" />
+    <ClInclude Include="Square.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

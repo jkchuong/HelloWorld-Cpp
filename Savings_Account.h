@@ -4,7 +4,8 @@
 #include <iostream>
 #include <string>
 
-class Savings_Account : public Account // public inheritance
+// final keyword shows this class cannot be derived from - can also be used on functions
+class Savings_Account final : public Account // public inheritance
 {
 	/*
 	*  Public Inheritance:
@@ -36,7 +37,9 @@ class Savings_Account : public Account // public inheritance
 public:
 	double int_rate;
 	void deposit(double amount);
-	//void withdraw(double amount); // Withdraw is inherited
+	virtual void withdraw(double amount); 
+	virtual void say_hello(); // no const here, redefinition, not overriden
+	virtual void say_something() const override; // override ensures you don't have a redefinition
 	
 	Savings_Account();
 	Savings_Account(double int_rate);

@@ -1,16 +1,16 @@
 #include "Account.h"
 
-Account::Account() : balance{0.0}, name{"An Account"}
+Account::Account() : balance{ DEF_BALANCE }, name{ DEF_NAME }
 {
 	std::cout << "Base no-args constructor\n";
 }
 
-Account::Account(double balance) : balance{ balance }, name{ "An Account" }
+Account::Account(double balance) : balance{ balance }, name{ DEF_NAME }
 {
 	std::cout << "Base one-args constructor\n";
 }
 
-Account::Account(std::string name) : balance{ 0.0 }, name{ name }
+Account::Account(std::string name) : balance{ DEF_BALANCE }, name{ name }
 {
 	std::cout << "Base one-args name constructor\n";
 }
@@ -58,4 +58,14 @@ void Account::withdraw(double amount)
 		balance -= amount;
 	else
 		std::cout << "Not enough funds\n";
+}
+
+void Account::say_hello() const
+{
+	std::cout << "Account::say_hello\n";
+}
+
+void Account::say_something() const
+{
+	std::cout << "Account::say_something\n";
 }
