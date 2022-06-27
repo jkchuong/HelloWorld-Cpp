@@ -153,6 +153,7 @@
     <ClInclude Include="Circle.h" />
     <ClInclude Include="Deep.h" />
     <ClInclude Include="HelloWorld.h" />
+    <ClInclude Include="IllegalBalanceException.h" />
     <ClInclude Include="io.h" />
     <ClInclude Include="IPrintable.h" />
     <ClInclude Include="Move.h" />

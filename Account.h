@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IllegalBalanceException.h"
 #include <iostream>
 #include<string>
 #include <string_view>

@@ -9,6 +9,9 @@ Savings_Account::Savings_Account() : int_rate{3.0}
 Savings_Account::Savings_Account(double int_rate) : int_rate{int_rate}
 {
 	std::cout << "Derived one-args constructor\n";
+
+	if (int_rate < 0.0)
+		throw IllegalFundsException{};
 }
 
 // Calling base constructor with string paramter

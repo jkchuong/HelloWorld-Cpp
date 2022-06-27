@@ -8,6 +8,9 @@ Account::Account() : balance{ DEF_BALANCE }, name{ DEF_NAME }
 Account::Account(double balance) : balance{ balance }, name{ DEF_NAME }
 {
 	std::cout << "Base one-args constructor\n";
+
+	if (balance < 0.0)
+		throw IllegalBalanceException{};
 }
 
 Account::Account(std::string name) : balance{ DEF_BALANCE }, name{ name }

@@ -122,5 +122,8 @@
     <ClInclude Include="IPrintable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IllegalBalanceException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

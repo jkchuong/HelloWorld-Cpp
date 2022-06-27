@@ -86,9 +86,10 @@ int main()
 	//Section16();
 
 	//Section17();
-	Section17_Challenge();
+	//Section17_Challenge();
 
-	
+	Section18();
+
 
 	return 0;
 }
@@ -2497,4 +2498,117 @@ void display(const std::vector<std::shared_ptr<Test>>& vec)
 	}
 
 	std::cout << "==================\n";
+}
+
+class DivideByZeroException{ };
+class NegativeValueException{ };
+
+double calculate_mpg(int miles, int gallons)
+{
+	if (gallons == 0)
+		throw DivideByZeroException{};
+
+	if (miles < 0 || gallons < 0)
+		throw NegativeValueException{};
+
+	return static_cast<double>(miles) / gallons;
+}
+
+
+
+// Exception Handling
+void Section18()
+{
+	int miles{};
+	int gallons{};
+	double miles_per_gallon{};
+
+	std::cout << "Enter the miles: ";
+	std::cin >> miles;
+	std::cout << "Enter the gallons: ";
+	std::cin >> gallons;
+
+	//miles_per_gallon = miles / gallons; // will crash
+	//miles_per_gallon = static_cast<double>(miles) / gallons; // will give infinity and not crash
+
+	/*
+	*  Stack Unwinding
+	*  If exception is thrown with no try-catch block in function
+	*  Call stack will unwind until a handler is found or program terminates
+	*  Will not execute rest of function
+	*  -> May lead to memory leak if things in the function aren't handled right
+	*  -> i.e not deleting pointers 
+	*/
+
+	try
+	{
+		if (gallons == 0)
+			throw DivideByZeroException{}; // Best practice to throw object, not integer
+
+		miles_per_gallon = static_cast<double>(miles) / gallons;
+		std::cout << "Result: " << miles_per_gallon << '\n';
+	}
+	catch (DivideByZeroException& ex) // catch by reference
+	{
+		std::cerr << "Sorry, can't divide by zero\n";
+	}
+
+	std::cout << "\n===============\n\n";
+
+	try
+	{
+		miles_per_gallon = calculate_mpg(miles, gallons); // Throw exception from function
+		std::cout << "Result: " << miles_per_gallon << '\n';
+	}
+	catch (DivideByZeroException& ex)
+	{
+		std::cerr << "Tried to divide by 0\n";
+	}
+	catch (NegativeValueException& ex) // handle multiple exceptions
+	{
+		std::cerr << "Negative value error" << '\n';
+	}
+	catch (...)
+	{
+		std::cerr << "Unknown exception\n"; // catch all exception
+	}
+
+	std::cout << "\n===============\n\n";
+
+	if (gallons != 0)
+	{
+		miles_per_gallon = static_cast<double>(miles) / gallons;
+		std::cout << "Result: " << miles_per_gallon << '\n';
+	}
+	else
+	{
+		std::cerr << "Sorry, can't divide by zero\n";
+	}
+	
+	std::cout << "\n===============\n\n";
+
+	try
+	{
+		std::unique_ptr<Account> my_account = std::make_unique<Account>(-0.3);
+		std::cout << *my_account << '\n';
+	}
+	catch (const IllegalBalanceException& ex)
+	{
+		std::cerr << ex.what() << '\n';
+	}
+
+	try
+	{
+		std::unique_ptr<Account> my_account = std::make_unique<Savings_Account>(-0.3);
+		my_account->say_something();
+	}
+	catch (const IllegalFundsException& ex)
+	{
+		std::cerr << ex.what() << '\n';
+	}
+
+
+	std::cout << "\n===============\n\n";
+
+	std::cout << "Bye\n";
 }
