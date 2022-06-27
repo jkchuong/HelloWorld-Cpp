@@ -126,4 +126,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="myfile.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="responses.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="romeoandjuliet.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

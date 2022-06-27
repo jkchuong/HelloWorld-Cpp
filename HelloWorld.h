@@ -45,3 +45,11 @@ void Section17();
 void Section17_Challenge();
 
 void Section18();
+
+void Section19();
+void Section19_Challenge1();
+void Section19_Challenge2();
+void Section19_Challenge3();
+void Section19_Challenge4();
+
+void Section20();

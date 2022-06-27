@@ -28,6 +28,9 @@
 #include <cstdlib>      // General purpose functions e.g convert C-style strings to other types (int, float, long, rand etc)
 #include <ctime>        // required for time
 #include <memory>       // for smart pointers
+#include <fstream>      // Used for input files, required for writing to file
+#include <sstream>      // for string streams
+#include <algorithm>
 
 /*
 * Arrange as:
@@ -88,8 +91,15 @@ int main()
 	//Section17();
 	//Section17_Challenge();
 
-	Section18();
+	//Section18();
 
+	//Section19();
+	//Section19_Challenge1();
+	//Section19_Challenge2();
+	//Section19_Challenge3();
+	//Section19_Challenge4();
+
+	Section20();
 
 	return 0;
 }
@@ -2514,8 +2524,6 @@ double calculate_mpg(int miles, int gallons)
 	return static_cast<double>(miles) / gallons;
 }
 
-
-
 // Exception Handling
 void Section18()
 {
@@ -2611,4 +2619,540 @@ void Section18()
 	std::cout << "\n===============\n\n";
 
 	std::cout << "Bye\n";
+}
+
+// I/O Streams
+void Section19()
+{
+	std::cout << "\n====== Boolean Manipulators ======\n";
+
+	std::cout << (10 == 20) << '\n'; // 0
+	std::cout << (10 == 10) << '\n'; // 1
+	std::cout << std::boolalpha;
+	std::cout << (10 == 20) << '\n'; // false
+	std::cout << (10 == 10) << '\n'; // true
+	std::cout << std::noboolalpha;
+	std::cout << (10 == 20) << '\n'; // 0
+	std::cout << (10 == 10) << '\n'; // 1
+
+	std::cout << "\n=== Method version ===\n";
+
+	std::cout.setf(std::ios::boolalpha);
+	std::cout << (10 == 20) << '\n'; // false
+	std::cout << (10 == 10) << '\n'; // true
+	std::cout << std::resetiosflags(std::ios::boolalpha); // Reset to default
+	std::cout << (10 == 20) << '\n'; // 0
+	std::cout << (10 == 10) << '\n'; // 1
+
+
+	std::cout << "\n====== Integer Manipulators ======\n";
+
+	int num{ 255 };
+	int num2{ -255 };
+
+	// Can also use method version with setf()
+	// Can also reset using resetiosflags
+
+	std::cout << std::dec << num << '\n';   // 255
+	std::cout << std::hex << num << '\n';   // ff
+	std::cout << std::oct << num << "\n\n"; // 377
+
+	std::cout << std::showbase; 
+	std::cout << std::dec << num << '\n';   // 255
+	std::cout << std::hex << num << '\n';   // 0xff
+	std::cout << std::oct << num << "\n\n"; // 0377
+
+	std::cout << std::uppercase << std::hex;
+	std::cout << num << '\n';        // 0XFF
+	std::cout << std::nouppercase;
+	std::cout << num << "\n\n";      // 0xff
+
+	std::cout << std::resetiosflags(std::ios::basefield); // Reset to base 10
+	std::cout << num << '\n';   // 255
+	std::cout << num2 << '\n';  // -255
+	std::cout << std::showpos;
+	std::cout << num << '\n';   // +255
+	std::cout << num2 << '\n';  // -255
+
+	std::cout << std::resetiosflags(std::ios::showbase);  // Reset to base 10
+	std::cout << std::resetiosflags(std::ios::showpos);   // Reset +
+	std::cout << std::resetiosflags(std::ios::uppercase); // Reset to lowercase
+
+
+	std::cout << "\n====== Floating point Manipulators ======\n";
+
+	double dub{ 1234.5678 };
+	double b_dub{ 123456789.987654321 };
+	double s_dub{ 12.34 };
+
+	std::cout << s_dub << '\n'; // 12.34
+	std::cout << std::showpoint;
+	std::cout << s_dub << "\n\n"; // 12.3400
+	
+	std::cout << dub << '\n';   // 1234.57 - precision of 6
+	std::cout << b_dub << "\n\n"; // 1.234457e+008 - precisiuon of 6
+
+	std::cout << std::setprecision(9);
+	std::cout << dub << '\n';   // 1234.5678 - precision of 9
+	std::cout << b_dub << "\n\n"; // 123456790 - precision of 9 + rounding
+
+	std::cout << std::fixed;
+	std::cout << std::setprecision(6); // default precision
+	std::cout << b_dub << "\n"; // 123546789.987654 - precision 6 from decimal
+	std::cout << std::setprecision(3); // default precision
+	std::cout << b_dub << "\n\n"; // 123546789.987 - precision 3 from decimal
+
+	std::cout << std::resetiosflags(std::ios::floatfield); // reset the fixed
+	std::cout << std::scientific << std::uppercase << std::showpos;
+	std::cout << b_dub << '\n'; // +1.235E+008
+	std::cout << std::scientific << std::uppercase << std::fixed << std::showpos;
+	std::cout << b_dub << "\n\n"; // +123465789.988
+
+	std::cout.unsetf(std::ios::fixed);
+	std::cout << std::noshowpos << std::noshowpos << std::setprecision(6);
+
+	std::cout << "\n====== Align and fill ======\n";
+	
+	std::string hello{ "Hello" };
+	std::cout << dub << hello << "\n\n"; // 1234.57Hello
+
+	std::cout << dub << "\n";   // 1234.57
+	std::cout << hello << "\n\n"; // Hello
+
+	// Set the rightmost side of the field for the next entry - i.e at position 10
+	// 1 2 3 4 5 6 8 7 9 0 1 2 3 4 5 6 8 
+	//       1 2 3 4 . 5 7 H e l l o      - notice 7 (end of dub) is at position 10
+ 	std::cout << std::setw(10) << dub << hello << std::endl; // right justified by default
+
+	std::cout << '\n';
+
+    // 1 2 3 4 5 6 7 8 9 0 1 2 3 5 4 6 7 8 9 0 1 2 3 4 5 6 8 7 8 9 0
+	//     1 2 3 4 . 5 7             H e l l o             H e l l o
+	std::cout << std::setw(10) << dub
+		<< std::setw(10) << hello
+		<< std::setw(10) << hello << std::endl;
+	 
+	std::cout << '\n';
+
+	std::cout << std::setw(10)
+		<< std::left // left justify
+		<< dub       // only affects dub
+		<< hello << "\n\n";
+
+	std::cout << std::setw(10) << dub
+		<< std::setw(10) << std::right << hello
+		<< std::setw(15) << std::right << hello
+		<< "\n\n";
+
+	std::cout << std::setfill('-'); // fill width set with -'s
+	std::cout << std::setw(10) << dub
+		<< hello << "\n\n";
+
+	std::cout << std::setfill('*');
+	std::cout << std::setw(10) << dub
+		<< std::setfill('-') << std::setw(10) << hello
+		<< std::setw(15) << hello << "\n\n";
+
+	std::cout << "\n====== Reading from text file ======\n";
+
+	//std::fstream in_file{ "../myfile.txt", std::ios::in }; // open a file for reading
+	//std::fstream in_file{ "../myfile.txt", std::ios::in | std::ios::binary }; // open a file for reading in binary mode
+
+	// Open a file for reading with ifstream
+
+	std::ifstream in_file{ "myfile.txt" }; // std::ios::in default
+
+	if (in_file.is_open())
+	{
+		int file_int{};
+		double file_double{};
+		std::string file_string{};
+
+		in_file >> file_int; // Gets 100
+		in_file >> file_double >> file_string; // Gets 255.67 and Larry
+		std::cout << file_int << file_double << file_string << '\n'; // prints 100255.67Larry
+		in_file.close(); // Close after usage
+	}
+	else
+	{
+		std::cerr << "in_file could not be opened\n";
+	}
+
+	in_file.open("myfile.txt");
+
+	if (in_file.is_open())
+	{
+		while (!in_file.eof()) // while not at the end
+		{ 
+			std::string line{};
+			std::getline(in_file, line); // read a line
+			std::cout << line << '\n'; // display the line
+		}
+
+		in_file.close();
+	}
+	else
+	{
+		std::cerr << "in_file could not be opened\n";
+	}
+
+	std::ifstream in_file_2;
+	std::string filename;
+	std::cin >> filename; // Get the file name
+	in_file_2.open(filename);
+
+	if (in_file_2) // does the same as in_file_2.is_open()
+	{
+		std::cout << "in_file_2 is open\n";
+
+		std::string line{};
+		while (std::getline(in_file_2, line))
+		{
+			std::cout << line << '\n'; // display the line
+		}
+
+		in_file_2.close();
+	}
+	else
+	{
+		std::cerr << "in_file_2 could not be opened\n";
+	}
+
+	in_file.close();   // close the files to flush out any unwritten data
+	in_file_2.close();
+
+	std::cout << "\n====== Writing to text file ======\n";
+
+	/*
+	*  Output files created if they don't exist
+	*  Output files overwritten (truncated) by default
+	*  Can be opened so new writes append
+	*  Can be open in text or binary
+	*/
+
+	{
+		std::ofstream bin_out_file{ "/bin_outfile.txt", std::ios::out | std::ios::binary }; // write in binary mode
+		std::ofstream tru_out_file{ "/tru_outfile.txt", std::ios::trunc }; // truncate (discard contents) when opening
+		std::ofstream app_out_file{ "/app_outfile.txt", std::ios::app }; // append on each write
+		std::ofstream ate_out_file{ "/ate_outfile.txt", std::ios::ate }; // seek to end of stream when opening
+
+		if (bin_out_file)
+		{
+			std::cout << "Writing to bin_outfile.txt\n";
+		}
+		else
+		{
+			std::cerr << "No file found\n";
+		}
+
+		bin_out_file.close();
+		tru_out_file.close();
+		app_out_file.close();
+		ate_out_file.close();
+	}
+
+	std::ofstream out_file;
+	std::string out_filename;
+	std::cout << "Enter a file name (call it A_File or A_File.txt): ";
+	std::cin >> out_filename;
+
+	// if it's not a .txt file, make it a .txt file
+	if (out_filename.substr(out_filename.length() - 4) != ".txt")
+		out_filename.append(".txt");
+
+
+	out_file.open(out_filename);
+
+	int out_num{ 100 };
+	double out_dub{ 255.67 };
+	std::string out_name{ "Jameson" };
+
+	if (out_file)
+	{
+		out_file << out_num << '\n'
+			<< out_dub << '\n'
+			<< out_name << std::endl; // flushed out unwritten buffer
+	}
+
+	out_file.close();
+
+	std::cout << "\n====== Copy one file to another ======\n";
+
+	std::ifstream copied_file{ "romeoandjuliet.txt" };
+	std::ofstream copy_file{ "copy.txt" };
+
+	if (!copied_file || !copy_file)
+	{
+		std::cerr << "File open error" << std::endl;
+		return;
+	}
+
+	std::string copied_line{};
+
+	std::cout << "Copying file to copy.txt\n";
+
+	while (std::getline(copied_file, copied_line))
+		copy_file << copied_line << std::endl;
+
+	// Same thing but one char at a time
+	//char c;
+	//while (copied_file.get(c))
+	//	copy_file.put(c);
+
+	copied_file.close();
+	copy_file.close();
+	
+	std::cout << "\n====== String Streams ======\n";
+
+	int num1{};
+	double total1{};
+	std::string name1{};
+	std::string info{ "Moe 100 1234.5" };
+	 
+	std::istringstream iss{ info };
+	iss >> name1 >> num1 >> total1;
+	std::cout << num1 << '\n'
+		<< total1 << '\n'
+		<< name1 << std::endl;
+
+	std::ostringstream oss{};
+	oss << name1 << " " << num1 << " " << total1;
+	std::cout << oss.str() << std::endl;
+
+
+	std::cout << "\n====== String Streams Validation ======\n";
+
+	int value{};
+	std::string validation_input{};
+	std::cout << "Enter an integer: ";
+	std::cin >> validation_input;
+
+	std::stringstream ss{ validation_input };
+	if (ss >> value)
+		std::cout << "An integer was entered\n";
+	else
+		std::cout << "An integer was NOT entered\n";
+
+	// Get rid of input buffer for things like 12.4, the .4 would remain
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
+}
+
+struct City
+{
+	std::string name;
+	long population;
+	double cost;
+};
+
+struct Country
+{
+	std::string name;
+	std::vector<City> cities;
+};
+
+struct Tours
+{
+	std::string title;
+	std::vector<Country>countries;
+};
+
+void Section19_Challenge1()
+{
+	Tours tours
+	{
+		"Tour Ticket Prices from Miami", 
+		{
+			{
+				"Colombia", 
+		        {
+					{"Bogota", 8778000, 400.98},
+	             	{"Cali", 2401000, 424.12},
+	               	{"Medellin", 2464000, 350.98},
+	             	{"Cartagena", 972000, 345.34}
+	            }
+		    },
+			{
+				"Brazil",
+				{
+					{"Rio De Janiero", 13500000, 567.45},
+					{"Sao Paulo", 11310000, 975.45},
+					{"Salvador", 18234000, 855.99}
+				}
+			},
+			{
+				"Chile",
+				{
+					{"Valdivia", 260000, 569.12},
+					{"Santiago", 7040000, 520.00}
+				}
+			},
+			{
+				"Argentina",
+				{
+					{"Buenos Aires", 3010000, 723.77}
+				}
+			}
+	    } 
+	};
+
+	std::cout << "1234567890123456789012345678901234567890123456789012345678901234567890";
+
+	std::cout << std::endl << std::endl;
+
+	std::cout << std::setw(50) << std::right << tours.title << std::endl << std::endl;
+
+	std::cout
+		<< std::setw(20) << std::left << "Country"
+		<< std::setw(20) << std::left << "City"
+		<< std::setw(15) << std::right << "Population"
+		<< std::setw(15) << std::right << "Price\n";
+
+	std::cout << std::setfill('=') << std::setw(71) << "\n";
+	std::cout << std::setfill(' ');
+	std::cout << std::fixed << std::setprecision(2);
+
+	for (const auto& country : tours.countries)
+	{
+		for (int i{ 0 }; i < country.cities.size(); i++)
+		{
+			std::cout
+				<< std::setw(20) << std::left << ((i == 0) ? country.name : "")
+				<< std::setw(20) << std::left << country.cities[i].name
+				<< std::setw(15) << std::right << country.cities[i].population
+				<< std::setw(15) << std::right << country.cities[i].cost
+				<< std::endl;
+		}
+	}
+
+	std::cout << "\n\n";
+
+}
+
+void Section19_Challenge2()
+{
+	std::fstream responses{ "responses.txt" };
+
+	if (!responses)
+	{
+		std::cerr << "Error\n";
+		return;
+	}
+
+	// Get correct answers
+
+	std::string answers{};
+	responses >> answers;
+	std::cout << "Correct answers: " << answers << '\n';
+
+	int total_scores{};
+	int number_of_students{};
+
+	while (!responses.eof())
+	{
+		std::string name{};     // Name of student 
+		std::string response{}; // Their response
+		int score{};            // Their score
+
+		responses >> name;
+		responses >> response;
+
+		for (int i{ 0 }; i < answers.size(); i++)
+		{
+			if (response[i] == answers[i])
+				score++;
+		}
+
+		total_scores += score;
+		number_of_students++;
+
+		std::cout << name << ": " << score << '\n';
+	}
+
+	std::cout << "Class average: " << (static_cast<double>(total_scores) / number_of_students) << '\n';
+
+	responses.close();
+}
+
+void Section19_Challenge3()
+{
+	std::ifstream roju{ "romeoandjuliet.txt" };
+
+	std::string input;
+	int total_words{};
+	int matches{};
+
+	std::cout << "Enter the word to search for: ";
+	std::getline(std::cin, input);
+
+	while (!roju.eof())
+	{
+		std::string word;
+		roju >> word;
+
+		// Find word in substrings too - e.g Romeo's instead of Romeo
+		if (word.find(input) != std::string::npos)
+			matches++;
+
+		total_words++;
+	}
+
+	std::cout << total_words << " were searched...\n";
+
+	std::cout << input << " was found " << matches << " times\n";
+}
+
+void Section19_Challenge4()
+{
+	std::ifstream roju{ "romeoandjuliet.txt" };
+	std::ofstream roju_new{ "romeoandjuliet_new.txt" };
+	std::ofstream roju_new_blanked{ "romeoandjuliet_new_blanked.txt" };
+
+	std::string line{};
+	int counter_new{1};
+	int counter_blanked{1};
+
+	std::cout << "Copying...\n";
+
+	while (std::getline(roju, line))
+	{
+		roju_new << counter_new << '\t' << line << std::endl;
+		counter_new++;
+
+		// If the line doesn't contain only spaces
+		if (line.find_first_not_of(' ') != std::string::npos)
+		{
+			roju_new_blanked << counter_blanked << '\t' << line << std::endl;
+			counter_blanked++;
+		}
+		else
+		{
+			roju_new_blanked << line << std::endl;
+		}
+	}
+
+	std::cout << "Copying done\n";
+
+}
+
+
+// STL
+void Section20()
+{
+	/*
+	*  Three main types:
+	*  - Containers (array, vector, deque, stack, set, map, etc)
+	*  - Algorithms (find, max, count, accumulate, sort, etc)
+	*  - Iterators (forward, reverse, by value, by reference, constant, etc)
+	*/
+
+	std::vector<int> v{ 1, 5, 3 };
+	std::sort(v.begin(), v.end());
+
+	for (auto elem : v)
+		std::cout << elem << std::endl; // 1 3 5
+
+	std::reverse(v.begin(), v.end());
+
+	for (auto elem : v)
+		std::cout << elem << std::endl; // 5 3 1
 }
