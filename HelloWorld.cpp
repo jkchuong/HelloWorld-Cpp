@@ -16,12 +16,16 @@
 #include "Circle.h"
 #include "Square.h"
 #include "IPrintable.h"
+#include "Templates.h"
 #include <iostream>     // Angled brackets for header files we didn't make. Quotes does files we make.
 #include <cstdint>      // for int_least#_t
 #include <iomanip>      // for output manipulator std::setprecision()
 #include <string>       // allows use of std::string for C++ Strings
-#include <string_view>
+#include <string_view>  // read-only string - can be used to intialize a string value
 #include <vector>       // for using vectors
+#include <set>
+#include <map>
+#include <list>
 #include <iomanip>      // IO manipulation
 #include <cctype>       // for character-based functions
 #include <cstring>      // Functions that work with C-style strings
@@ -31,6 +35,7 @@
 #include <fstream>      // Used for input files, required for writing to file
 #include <sstream>      // for string streams
 #include <algorithm>
+#include <numeric>
 
 /*
 * Arrange as:
@@ -40,7 +45,12 @@
 * 4. Standard library headers
 */
 
-#define PRINT_JOE // This has scope in purely this file and no where else
+#define PRINT_JOE  // This has scope in purely this file and no where else
+
+// Macros do not know C++ - know only for legacy code - else avoid!
+#define PI 3.14159 // MACRO, will substitute PI for 3.14159
+#define MAX(a, b) ((a > b) ? a : b) // Generic macro with arguments
+#define SQUARE(a) a*a
 
 //using namespace std; // This is a "using directive" that lets us use functinos in std namespace without adding std:: 
 
@@ -2468,7 +2478,7 @@ void Section17()
 // Can we shorten this?
 std::unique_ptr<std::vector<std::shared_ptr<Test>>> make(); 
 void fill(std::vector<std::shared_ptr<Test>>& vec, int num);
-void display(const std::vector<std::shared_ptr<Test>>& vec);
+void display18(const std::vector<std::shared_ptr<Test>>& vec);
 
 
 void Section17_Challenge()
@@ -2479,7 +2489,7 @@ void Section17_Challenge()
 	int num;
 	std::cin >> num;
 	fill(*vec_ptr, num);
-	display(*vec_ptr);
+	display18(*vec_ptr);
 }
 
 std::unique_ptr<std::vector<std::shared_ptr<Test>>> make()
@@ -2498,7 +2508,7 @@ void fill(std::vector<std::shared_ptr<Test>>& vec, int num)
 	}
 }
 
-void display(const std::vector<std::shared_ptr<Test>>& vec)
+void display18(const std::vector<std::shared_ptr<Test>>& vec)
 {
 	std::cout << "\nDisplaying vector data\n==================\n";
 
@@ -3134,25 +3144,384 @@ void Section19_Challenge4()
 
 }
 
+// MAX function as a template function
+// Will compile, but won't generate code until it is used
+// Since we use operator>, clas must overload operator> 
+//template <class T> // also works
+template <typename T>
+T max(T a, T b)
+{
+	return (a > b) ? a : b;
+}
+
+template<typename T1, typename T2>
+void say(T1 a, T2 b)
+{
+	std::cout << a << " " << b << std::endl;
+}
+
+template<typename T>
+void my_swap(T &a, T &b)
+{
+	T temp = a;
+	a = b;
+	b = temp;
+}
+
+struct Person
+{
+	std::string name;
+	int age;
+	bool operator>(const Person& rhs) const
+	{
+		return this->age > rhs.age;
+	}
+};
+
+std::ostream& operator<<(std::ostream& os, const Person &person)
+{
+	os << person.name << " " << person.age;
+	return os;
+}
+
+void display(const std::vector<int>& vec)
+{
+	std::cout << "[ ";
+	for (auto const& i : vec)
+	{
+		std::cout << i << " ";
+	}
+	std::cout << " ]\n";
+}
+
+void square_function(int x)
+{
+	std::cout << x * x << " ";
+}
 
 // STL
 void Section20()
 {
 	/*
-	*  Three main types:
+	*  Three main types in Standard Template Library:
 	*  - Containers (array, vector, deque, stack, set, map, etc)
 	*  - Algorithms (find, max, count, accumulate, sort, etc)
 	*  - Iterators (forward, reverse, by value, by reference, constant, etc)
 	*/
 
-	std::vector<int> v{ 1, 5, 3 };
-	std::sort(v.begin(), v.end());
+	std::cout << "\n====== MACROS ======\n\n";
+	{
+		std::cout << MAX(10, 20) << std::endl; // 20 - Using the defined macro
+		std::cout << MAX(2.4, 3.5) << std::endl;     // 3.5
+		std::cout << MAX('A', 'C') << std::endl;         // C
 
-	for (auto elem : v)
-		std::cout << elem << std::endl; // 1 3 5
+		std::cout << SQUARE((2 * 2) + 1) << std::endl; // 25
+		std::cout << 100 / SQUARE(5) << std::endl;     // 100 - expect 4
+	}
 
-	std::reverse(v.begin(), v.end());
+	std::cout << "\n====== FUNCTION TEMPLATES ======\n\n";
+	{
+		/*
+		*  Blueprint for function
+		*  Allows plugging-in any data type
+		*  Compiler generates the appropriate function/class from blueprint
+		*/
 
-	for (auto elem : v)
-		std::cout << elem << std::endl; // 5 3 1
+		// templates knows C++
+		std::cout << max<int>(10 + (7 - 1), 20) << '\n'; // compiler generates code here from template
+		std::cout << max<double>(2.4 - 1, 3.5) << '\n';
+		std::cout << max<char>('C', 'A') << '\n';
+
+		say<double, char>(max<double>(1.0, 0.5), max<char>('@', ']')); // 1 ]
+
+		Person p1{ "Curly", 50 };
+		Person p2{ "Moe", 30 };
+
+		Person p3 = max(p1, p2); // Error if Person does not override operator>
+		std::cout << p3 << " is older\n";
+		say(std::string("Banoffee"), p3);
+
+		int x{ 100 };
+		int y{ 200 };
+		say(x, y);
+		my_swap(x, y);
+		say(x, y);
+
+		std::cout << p1 << '\n';
+		std::cout << p2 << '\n';
+		my_swap(p1, p2);
+		std::cout << p1 << '\n';
+		std::cout << p2 << '\n';
+	}
+
+	std::cout << "\n====== CLASS TEMPLATES ======\n\n";
+	{
+		/*
+		*  Blueprint for class
+		*  Allows plugging-in any data type
+		*  Compiler generates the appropriate function/class from blueprint
+		*/
+
+		Item<int> item1{ "Jimmy", 100 };
+		std::cout << item1.get_name() << " " << item1.get_value() << std::endl;
+
+		Item<std::string> item2{ "Andy", "Chuong" };
+		std::cout << item2.get_name() << " " << item2.get_value() << std::endl;
+
+		Item<Item<std::string>> item3{ "Chuong", {"Father", "Mother"} };
+		std::cout << item3.get_name()
+			<< " " << item3.get_value().get_name()
+			<< " " << item3.get_value().get_value()
+			<< std::endl;
+
+		std::vector<Item<double>> vec{};
+		vec.push_back(Item<double>("Larry", 100.1));
+		vec.push_back(Item<double>("Moe", 200.2));
+		vec.push_back(Item<double>("Curly", 300.3));
+
+		for (const auto& item : vec)
+		{
+			std::cout << item.get_name() << " " << item.get_value() << std::endl;
+		}
+
+		My_Pair<std::string, int> pair1{ "Martha", 100 };
+		My_Pair<Item<double>, char> pair2{ {"Jason", 16.1}, 300 };
+
+		std::cout << pair1.first << ", " << pair1.second << '\n';
+		std::cout << pair2.first.get_name() << ", " << pair2.second << '\n';
+
+		std::cout << "\n====== GENERIC ARRAY TEMPLATES ======\n\n";
+
+		Array<int, 5> nums;
+		std::cout << "The size of nums is: " << nums.get_size() << '\n'; // 5
+		std::cout << nums << std::endl; // [ garbage ]
+		nums.fill(0);
+		std::cout << "The size of nums is: " << nums.get_size() << '\n'; // 5
+		std::cout << nums << std::endl; // [ 0 0 0 0 0 ]
+		nums.fill(10);
+		std::cout << nums << std::endl; // [ 10 10 10 10 10 ]
+
+		nums[0] = 1000;
+		nums[3] = 2000;
+		std::cout << nums << std::endl; // [ 10 10 10 10 10 ]
+
+
+		Array<int, 100> nums2{ 1 };
+		std::cout << "The size of nums2 is: " << nums2.get_size() << '\n';
+		std::cout << nums2 << '\n';
+	}
+
+	std::cout << "\n====== ITERATORS ======\n\n";
+	{
+		// Iterators must be declared based on the container type they will iterate over
+
+		std::cout << "==Test 1==\n";
+		{
+			std::vector<int> nums{ 1,2,3,4,5 };
+			auto it = nums.begin(); // Declare iterator to first element
+			std::cout << *it << '\n';  // 1
+
+			it++;
+			std::cout << *it << '\n';  // 2
+
+			it += 2;
+			std::cout << *it << '\n';  // 4
+
+			it -= 2;
+			std::cout << *it << '\n';  // 2
+
+			it = nums.end() - 1;
+			std::cout << *it << '\n';  // 5
+		}
+
+		std::cout << "==Test 2==\n";
+		{
+			std::vector<int> nums{ 1,2,3,4,5 };
+
+			std::vector<int>::iterator it = nums.begin();
+			while (it != nums.end())
+			{
+				std::cout << *it << '\n';
+				it++;
+			}
+
+			// Change all elements to 0
+			it = nums.begin();
+			while (it != nums.end())
+			{
+				*it = 0;
+				it++;
+			}
+
+			display(nums);
+		}
+
+		std::cout << "==Test 3==\n";
+		{
+			std::vector<int> nums{ 1,2,3,4,5 };
+
+			std::vector<int>::const_iterator it = nums.begin();
+			// auto it = nums.cbegin(); // same thing
+
+			while (it != nums.end())
+			{
+				std::cout << *it << '\n';
+				it++;
+			}
+
+			// Compile error if we try to change the element
+			it = nums.begin();
+			//*it = 10; // *it must be a modifiable lvalue
+
+		}
+
+		std::cout << "==Test 4==\n";
+		{
+			std::vector<int> vec{ 1,2,3,4 };
+			auto it = vec.rbegin(); // reverse iterator starts at 4
+			while (it != vec.rend())
+			{
+				std::cout << *it << '\n'; // 4 3 2 1 
+				it++;
+			}
+
+			// Constant reverse iterator over list
+			std::list<std::string> names{ "Larry", "Moe", "Curly" };
+			auto it2 = names.crbegin(); // constant reverse iterator
+			std::cout << *it2 << '\n';  // Curly
+			it2++; // now point to Moe
+			std::cout << *it2 << '\n';
+
+			// iterator over map
+			std::map<std::string, std::string> favourites
+			{
+				{"Frank", "C++"},
+				{"Jimmy", "C#"},
+				{"Jason", "Assembly"}
+			};
+			auto it3 = favourites.begin(); // Iterator over string string pairs
+
+			// Notice order it prints is not the same as how we initalised
+			while (it3 != favourites.end())
+			{
+				std::cout << it3->first << ": " << it3->second << '\n';
+				it3++;
+			}
+
+		}
+
+		std::cout << "==Test 5==\n";
+		{
+			// Iterate over subset of container
+			std::vector<int> vec{ 1,2,3,4,5,6,7,8,9,10 };
+			auto start = vec.begin() + 2; // 3
+			auto finish = vec.end() - 3;  // 8 (because .end points to 1 spot after the last element)
+
+			while (start != finish)
+			{
+				std::cout << *start << '\n';
+				start++;
+			}
+		}
+
+	}
+
+	std::cout << "\n====== ALGORITHMS ======\n\n";
+	{
+		// STL algorithms work on sequences of container elements given by iterator
+
+		std::vector<int> vec{ 1, 2, 3, 4 };
+
+		// Find first occurance of an element in container
+		// Require operator== for it to work - need to override in own class
+		auto loc = std::find(vec.begin(), vec.end(), 3);
+		if (loc != vec.end())
+			std::cout << *loc << '\n';
+
+		// Count number of elements in container
+		std::vector<int> vec2{ 1, 2, 3, 4, 5, 1, 3, 1 };
+		int num = std::count(vec2.begin(), vec2.end(), 1); // 3 occurences
+		std::cout << num << " occurences found\n";
+
+		// Count_if using lambda expression
+		std::vector<int> vec3{ 1, 2, 3, 4, 5, 1, 3, 1, 100 };
+		int num3 = std::count_if(vec3.begin(), vec3.end(), [](int x)
+			{
+				return x % 2 != 0; // 6 odd numbers found
+			}
+		);
+		std::cout << num3 << " odd numbers found\n"; 
+
+
+		// Replace occurances of elements in container
+		for (auto i : vec2)
+		{
+			std::cout << i << " ";
+		}
+		std::cout << std::endl;
+
+		std::replace(vec2.begin(), vec2.end(), 1, 999); // replace all 1's with 999
+		for (auto i : vec2)
+		{
+			std::cout << i << " ";
+		}
+		std::cout << std::endl;
+
+
+		// All of elements adhere to condition
+		std::vector<int> vec4{ 1, 3, 5, 4, 5, 19, 14, 17, 12, 19 };
+		if (std::all_of(vec4.begin(), vec4.end(), [](int x)
+			{
+				return x > 10;
+			}))
+			std::cout << "All elements are > 10\n";
+		else
+			std::cout << "Not all elements are > 10\n";
+
+		if (std::all_of(vec4.begin(), vec4.end(), [](int x)
+			{
+				return x < 20;
+			}))
+			std::cout << "All elements are < 20\n";
+		else
+			std::cout << "Not all elements are < 20\n";
+
+
+		// Transform elements in container - e.g strings
+		std::string str1{ "This is a test" };
+		std::cout << "Before: " << str1 << '\n';
+		std::transform(str1.begin(), str1.end(), str1.begin(), ::toupper);
+		std::cout << "After: " << str1 << '\n';
+
+		// for_each applies function to each element in iterator
+		struct Square_Functor
+		{
+			void operator()(int x)
+			{
+				std::cout << x * x << " ";
+			}
+		};
+
+		Square_Functor square; // Function object (Functor)
+
+		// Using functor
+		std::for_each(vec.begin(), vec.end(), square); // 1 4 9 16
+		std::cout << std::endl;
+
+		// Using regular function
+		std::for_each(vec.begin(), vec.end(), square_function); // 1 4 9 16
+		std::cout << std::endl;
+
+		// Using lambda expression
+		std::for_each(vec.begin(), vec.end(), [](int x)
+			{
+				std::cout << x * x << " ";  // 1 4 9 16
+			}
+		);
+		std::cout << std::endl;
+
+	}
+
+
+
 }

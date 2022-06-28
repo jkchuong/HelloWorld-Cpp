@@ -156,6 +156,7 @@
     <ClInclude Include="IllegalBalanceException.h" />
     <ClInclude Include="io.h" />
     <ClInclude Include="IPrintable.h" />
+    <ClInclude Include="Templates.h" />
     <ClInclude Include="Move.h" />
     <ClInclude Include="Movie.h" />
     <ClInclude Include="Movies.h" />

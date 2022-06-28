@@ -125,6 +125,9 @@
     <ClInclude Include="IllegalBalanceException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Templates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="myfile.txt">
