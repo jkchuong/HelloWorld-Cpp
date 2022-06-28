@@ -23,6 +23,7 @@
 #include <string>       // allows use of std::string for C++ Strings
 #include <string_view>  // read-only string - can be used to intialize a string value
 #include <vector>       // for using vectors
+#include <array>        // Raw arrays - but better
 #include <set>
 #include <map>
 #include <list>
@@ -34,8 +35,9 @@
 #include <memory>       // for smart pointers
 #include <fstream>      // Used for input files, required for writing to file
 #include <sstream>      // for string streams
-#include <algorithm>
-#include <numeric>
+#include <algorithm>    // for useful algorithms like sort, find, min/max
+#include <numeric>      // for accumulate
+#include <deque>        // Deque (double ended queue)
 
 /*
 * Arrange as:
@@ -109,7 +111,9 @@ int main()
 	//Section19_Challenge3();
 	//Section19_Challenge4();
 
-	Section20();
+	//Section20();
+	Section20_Challenge1();
+
 
 	return 0;
 }
@@ -3522,6 +3526,147 @@ void Section20()
 
 	}
 
+	std::cout << "\n====== SEQ-CON ARRAY ======\n\n";
+	{
+		// Overload operator< and operator== in own classes as they're being used if put in container
 
+		// There's others like accumulate, adjacent, sort, etc
+		std::array<int, 5> arr{ 1,2,3,4,5 };
+		std::array<int, 5> arr1{ 10,20,30,40,50 };
+		std::cout << "Size: " << arr.size() << '\n';         // 5
+		std::cout << "at(0): " << arr.at(0) << '\n';         // 1
+		std::cout << "[1]: " << arr[1] << '\n';              // 2
+		arr.swap(arr1);
+		std::cout << "Front: " << arr.front() << '\n';       // 10
+		std::cout << "Back: " << arr.back() << '\n';         // 50
+		std::cout << "Empty?: " << arr.empty() << '\n';      // 0 (false)
+		std::cout << "Max Size: " << arr.max_size() << '\n'; // 5
+		std::cout << "Raw address: " << arr.data() << '\n';  // Address of raw array
+
+		auto min_num = std::min_element(arr.begin(), arr.end());
+		auto max_num = std::max_element(arr.begin(), arr.end());
+		std::cout << "Min: " << *min_num << '\n';  // 10
+		std::cout << "Max: " << *max_num << '\n';  // 50
+	}
+
+	std::cout << "\n====== SEQ-CON VECTOR ======\n\n";
+	{
+		// Also shrink_to_fit, reserve, clear, erase, swap, sort, copy, copy_if back_inserter etc
+
+		std::vector<int> vec{ 1, 2, 3, 4, 5 };
+		std::vector<int> vec1(10, 100); // ten 100s
+		std::vector<int> vec2{ 10, 20, 30, 40, 50 };
+
+		std::cout << "Size: " << vec.size() << '\n';         // 5
+		std::cout << "Capacity: " << vec.capacity() << '\n'; // 5
+		std::cout << "Max Size: " << vec.max_size() << '\n'; // a big number
+		std::cout << "at(0): " << vec.at(0) << '\n';         // 1
+		std::cout << "[1]: " << vec[1] << '\n';              // 2
+		std::cout << "Front: " << vec.front() << '\n';       // 1
+		std::cout << "Back: " << vec.back() << '\n';         // 5
+
+		Person p1{ "Larry", 10 };
+		std::vector<Person> persons;
+		persons.push_back(p1);  // add p1 to the back - copies p1
+		persons.pop_back();     // remove last element (p1)
+		persons.push_back(Person{ "Jason", 10 }); // Move semantics
+		persons.emplace_back("Harbinger", 200); // efficient - construct within array, no move or copy
+
+		auto it = std::find(vec.begin(), vec.end(), 3); // get position of 3
+		vec.insert(it, 10); // 1 2 10 3 4 5
+		
+		it = std::find(vec.begin(), vec.end(), 4); // get position of 4
+		vec.insert(it, vec2.begin(), vec2.end());  // 1 2 10 3 10 20 30 40 50 4 5 
+
+
+	}
+
+	std::cout << "\n====== SEQ-CON DEQUE ======\n\n";
+	{
+		/*
+		*  Dynamic size
+		*  Not stored in contiguous memory
+		*  Rapid insertion at the front and the back
+		*/
+
+		std::deque<int> d{ 1,2,3,4,5 };
+		std::deque<int> d1(10, 100); // ten 100s
+
+		d.push_back(100);  // 1 2 3 4 5 100
+		d.push_front(200); // 200 1 2 3 4 5 100
+
+		Person p1{ "Larry", 18 };
+		std::deque<Person> persons;
+		persons.push_back(p1); // add p1 to the back
+		persons.pop_back();    // remove p1 from the back
+		persons.push_front(Person{ "Larry", 18 });
+		persons.pop_front();   // remove element from the front
+		persons.emplace_back("Larry", 18); // add to back - efficient
+		persons.emplace_front("Moe", 24);  // add to front - efficient
+
+		std::cout << "Back: " << d.back() << '\n';   // 100
+		std::cout << "Front: " << d.front() << '\n'; // 200
+		std::cout << "Size: " << d.size() << '\n';   // 7
+
+	}
+
+	std::cout << "\n====== SEQ-CON LIST/FORWARD LIST ======\n\n";
+	{
+
+	}
+}
+
+bool is_palindrome(const std::string& s)
+{
+	// Iterate over string and copy over if alphanumeric
+	std::deque<char> s_new;
+	for (char c : s)
+	{
+		if (std::isalpha(c))
+			s_new.push_back(toupper(c)); // to upper if alphanumeric
+	}
+
+	//auto it = s.begin();
+	//while (it != s.end())
+	//{
+	//	if (std::isalpha(*it))
+	//		s_new.push_back(toupper(*it)); // to upper if alphanumeric
+	//	it++;
+	//}
+	
+	// Compare from the front and back
+	while (s_new.size() > 1)
+	{
+		char front = s_new.front();
+		char back = s_new.back();
+
+		if (front != back)
+			return false;
+
+		// remove front and back
+		s_new.pop_back();
+		s_new.pop_front();
+	}
+
+	return true;
+}
+
+void Section20_Challenge1()
+{
+	std::vector<std::string> test_strings
+	{
+		"a", "aa", "aba", "abba", "abbcbba", "ab", "abc", "radar", "bob", "ana", "avid diva",
+		"Amore, Roma", "A Toyota's a toyota", "A Santa at NASA", "C++",
+		"A man, a plan, a cat, a ham, a yak, a yam, a hat, a canal-Panama!", "This is a palindrome", "palindrome" 
+	};
+
+
+	std::cout << std::boolalpha;
+	std::cout << std::setw(8) << std::left << "Result" << "String" << std::endl;
+	for (const auto& s : test_strings)
+	{
+		std::cout << std::setw(8) << std::left << is_palindrome(s) << s << std::endl;
+	}
+	std::cout << std::endl;
 
 }
