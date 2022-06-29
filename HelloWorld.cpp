@@ -24,7 +24,7 @@
 #include <string_view>  // read-only string - can be used to intialize a string value
 #include <vector>       // for using vectors
 #include <array>        // Raw arrays - but better
-#include <set>
+#include <set>          // sets and multiset
 #include <map>
 #include <list>
 #include <forward_list>
@@ -39,6 +39,9 @@
 #include <algorithm>    // for useful algorithms like sort, find, min/max
 #include <numeric>      // for accumulate
 #include <deque>        // Deque (double ended queue)
+#include <random>
+#include <stack>
+#include <queue>
 
 /*
 * Arrange as:
@@ -115,6 +118,8 @@ int main()
 	Section20();
 	//Section20_Challenge1();
 	//Section20_Challenge2();
+	// Section20_Challenge3();
+	// Section20_Challenge4();
 
 
 	return 0;
@@ -3182,6 +3187,11 @@ struct Person
 	{
 		return this->age > rhs.age;
 	}
+
+	bool operator<(const Person& rhs) const
+	{
+		return this->age < rhs.age;
+	}
 };
 
 std::ostream& operator<<(std::ostream& os, const Person &person)
@@ -3661,11 +3671,192 @@ void Section20()
 		*  implemented as binary tree or hashsets
 		* 
 		*  Set, unordered set, multiset, unordered multiset
+		*  No concept of front and back
+		*  No direct access - no .at() or []
+		*  Uses operator< for ordering
 		*/
 
 		std::set<int> s{ 1,2,3,4,5 };
+		s = {4,1,1,3,3,2,5}; // 1 2 3 4 5 - unique and sorted
+		std::cout << s.size() << '\n';
+		std::cout << s.max_size() << '\n';
+		s.insert(7); // 1 2 3 4 5 7
+				
+		s.erase(3); // erase the 3: 1 2 4 5 7
+		auto it = s.find(5);
+		if (it != s.end())
+			s.erase(it); // erase the 5 : 1 2 4 7
+
+		if (s.count(4)) // can only return 0 or 1
+			std::cout << "4 is in the set s";
+		else
+			std::cout << "4 is not in the set s";
+		
+
+		Person p1{"Larry", 18};
+		Person p2{"Moe", 25};
+		std::set<Person> stooges;
+		stooges.insert(p1);
+
+		// returns std::pair<iterator, bool>
+		auto result1 = stooges.insert(p1);
+		auto result2 = stooges.insert(p2);
+		
+		std::cout << result1.first->name << " was inserted: " << result1.second << std::endl;
+		std::cout << result2.first->name << " was inserted: " << result2.second << std::endl;
+
+		// Won't be input as age is being compared, and 25 already exists!
+		stooges.emplace(Person{"Jason", 25});
+		auto itp = stooges.find(Person("XXXX", 25));
+		if (itp != stooges.end())
+			stooges.erase(itp); // Will remove Moe as 25 is being compared!
+
+		 /*
+		 *  Multiset:
+		 *  Sorted by key
+		 *  Allows duplicates
+		 *  All iterators available
+		 *
+		 *  Unordered set:
+	 	 *  Elements unordered
+	 	 *  No duplicates
+		 *  Elements cannot be modified - must be erased and new element inserted
+		 *  No reverse iterators
+		 */
+	}
+
+	std::cout << "\n====== ASSOCIATIVE CONT MAPS ======\n\n";
+	{
+		/*
+		*  Map, unordered map, multimap, unordered multimap
+		*  Similar to dictionary
+		*  Elements stored as key value pairs
+		*  Ordered by key
+		*  Keys are unique (no duplicates)
+		*  Direct element access with key
+		*  All iterators available
+		*/
+
+		std::map<std::string, int> m1{
+			{"Larry", 18},
+			{"Moe", 25}
+		};
+
+		m1["Larry"] += 10; // 28
+
+		std::map<std::string, std::string> m{
+			{"Larry", "Larson"},
+			{"Moe", "Magnabble"},
+			{"George", "Geofferson"}
+		};
+
+		std::pair<std::string, std::string> p1{"James", "Johnson"};
+		m.insert(p1);
+		m.insert(std::make_pair("Roger", "Ranger"));
+
+		m["Ami"] = "Agliore"; // insert new KVP (Key-Value Pair)
+		m["Ami"] = "Argentinia"; // update value
+		m.at("Ami") = "African"; // update value
+		
+		m.erase("Moe"); // erase Moe, can use iterator or .find as before
+
+		 /*
+		 *  Multi map:
+		 *  Ordered by key
+		 *  Duplicate elements allowed
+		 *  All iterators allowed
+		 *
+		 *  Unordered map:
+		 *  Elements unordered
+		 *  No duplicates
+		 *  Mo reverse iterators
+		 *
+		 *  Unordered multimap:
+		 *  Elements unordered
+		 *  Duplicate elements allowed
+		 *  No reverse iterators allowed
+		 */
+	}
+
+	std::cout << "\n====== ADAPTORS CONT STACK ======\n\n";
+	{
+		/* 
+		 * Last-in-first-out (LIFO) structure
+		 * All operations occur on one end of the stack
+		 * No iterators supported
+		 * Adaptor because it's implemented over other STL containers
+		 * Can choose which container it will adapt to
+		 */
+
+		std::stack<int> s;                    // deque - default
+		std::stack<int, std::vector<int>> s1; // vector
+		std::stack<int, std::list<int>> s2;   // list
+		std::stack<int, std::deque<int>> s3;  // deque
+
+		s.push(10);
+		s.push(20);
+		s.push(30);
+
+		std::cout << "Size: " << s.size() << '\n';
+		std::cout << s.top() << '\n';
+		s.pop();
+		std::cout << s.top() << '\n';
+		s.pop();
+		std::cout << "Size: " << s.size() << '\n';
+		std::cout << s.top() << '\n';
+		s.pop();
+		// std::cout << s.top() << '\n'; // Error as top is empty
+	}
+	
+	std::cout << "\n====== ADAPTORS CONT QUEUE ======\n\n";
+	{
+		/* 
+		 * First-in-first-out (FIFO) data structure
+		 * Elements are pushed at the back and popped from the front
+		 * No iterators supported
+		 * Can be implemented as list or deque
+		 */
+
+		std::queue<int> q; // deque
+		std::queue<int, std::list<int>> q2; // list
+		std::queue<int, std::deque<int>> q3; // deque
+
+		q.push(10);
+		q.push(20);
+		q.push(30);
+
+		std::cout << "Size: " << q.size() << '\n';   // 3
+		std::cout << "Front: " << q.front() << '\n'; // 10
+		std::cout << "Back: " << q.back() << '\n';   // 30 
+		q.pop();
+		std::cout << "Front: " << q.front() << '\n'; // 20
+		std::cout << "Back: " << q.back() << '\n';   // 30
+		std::cout << "Size: " << q.size() << '\n';   // 2
 
 	}
+	
+	std::cout << "\n====== ADAPTORS CONT PRIORITY QUEUE ======\n\n";
+	{
+		/*
+		 * FIFO
+		 * Elements stored internally as vector by default
+		 * Elements inserted in priority order (largest value at the front)
+		 * No iterators
+		 * Duplicates allowed
+		 */
+
+		std::priority_queue<int> pq; // vector
+		pq.push(10);
+		pq.push(20);
+		pq.push(3);
+		pq.push(4);
+
+		std::cout << pq.top() << '\n'; // 20 (largest)
+		pq.pop();
+		std::cout << pq.top() << '\n'; // 10 (largest)
+	}
+	
+
 }
 
 bool is_palindrome(const std::string& s)
@@ -3711,8 +3902,7 @@ void Section20_Challenge1()
 		"Amore, Roma", "A Toyota's a toyota", "A Santa at NASA", "C++",
 		"A man, a plan, a cat, a ham, a yak, a yam, a hat, a canal-Panama!", "This is a palindrome", "palindrome" 
 	};
-
-
+	
 	std::cout << std::boolalpha;
 	std::cout << std::setw(8) << std::left << "Result" << "String" << std::endl;
 	for (const auto& s : test_strings)
@@ -3862,4 +4052,147 @@ void Section20_Challenge2()
 			}
 		}
 	}
+}
+
+void Section20_Challenge3()
+{
+	std::cout << "\n====== PART 1 ======\n";
+	{
+		std::map<std::string, int> word_count; 
+		
+		std::ifstream in_file{"words.txt"};
+
+		while (!in_file.eof())
+		{
+			std::string word;
+			in_file >> word;
+
+			std::string clean_word;
+			// clean word (remove non alpha words)
+			for (const char c : word)
+			{
+				if (isalpha(c))
+					clean_word += c;
+			}
+
+			// if word is already in map, increment counter, else make new key
+			if (word_count.contains(clean_word))
+				word_count[clean_word]++;
+			else
+				word_count[clean_word] = 1;
+		}
+		
+		// Display results - no need to sort as map is auto sorted
+		std::cout << std::setw(15) << std::left << "Word" << std::setw(5) << std::right << "Count\n";
+		std::cout << "====================\n";
+
+		// Structured binding
+		for (const auto& [first, second] : word_count)
+		{
+			std::cout
+			<< std::setw(15) << std::left << first
+			<< std::setw(5) << std::right << second
+			<< std::endl;
+		}
+	}
+
+	std::cout << "\n====== PART 2 ======\n";
+	{
+		std::map<std::string, std::set<int>> word_occurrences;
+		int line_number{1};
+
+		std::ifstream in_file{"words.txt"};
+
+		while (!in_file.eof())
+		{
+			// Get each line in the file
+			std::string line;
+			std::getline(in_file, line);
+			std::stringstream line_stream{line};
+
+			// While not at end of stream and the stream isn't empty
+			while (!line_stream.eof() && line_stream.rdbuf()->in_avail())
+			{
+				// Get each word in the line
+				std::string word;
+				std::string clean_word;
+				line_stream >> word;
+
+				// Clean word
+				for (const char c : word)
+				{
+					if (isalpha(c))
+						clean_word += c;
+				}
+				
+				// Add line number to the word
+				word_occurrences[clean_word].insert(line_number);
+			}
+
+			line_number++;
+		}
+
+		// Display map
+		std::cout << std::setw(15) << std::left << "Word" << "Occurrences\n";
+		std::cout << "=================================\n";
+
+		for (const auto& [word, set] : word_occurrences)
+		{
+			std::cout
+			<< std::setw(15) << std::left << word
+			<< "[ ";
+			
+			for (const int& number : set)
+			{
+				std::cout << number << " ";
+			}
+
+			std::cout << "]\n";
+		}
+	}
+}
+
+bool is_palindrome2(const std::string& s)
+{
+	// Iterate over string and copy over if alphanumeric
+	std::stack<char> s_new;
+	std::queue<char> q_new;
+	for (const char c : s)
+	{
+		if (std::isalpha(c))
+		{
+			// Stack and Queue to compare from front and back
+			s_new.push(toupper(c));
+			q_new.push(toupper(c));
+		}
+	}
+
+	while (!s_new.empty() && !q_new.empty())
+	{
+		if (s_new.top() != q_new.front())
+			return false;
+
+		s_new.pop();
+		q_new.pop();
+	}
+	
+	return true;
+}
+
+void Section20_Challenge4()
+{
+	std::vector<std::string> test_strings
+	{
+		"a", "aa", "aba", "abba", "abbcbba", "ab", "abc", "radar", "bob", "ana", "avid diva",
+		"Amore, Roma", "A Toyota's a toyota", "A Santa at NASA", "C++",
+		"A man, a plan, a cat, a ham, a yak, a yam, a hat, a canal-Panama!", "This is a palindrome", "palindrome" 
+	};
+	
+	std::cout << std::boolalpha;
+	std::cout << std::setw(8) << std::left << "Result" << "String" << std::endl;
+	for (const auto& s : test_strings)
+	{
+		std::cout << std::setw(8) << std::left << is_palindrome2(s) << s << std::endl;
+	}
+	std::cout << std::endl;
 }
