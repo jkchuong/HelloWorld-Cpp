@@ -27,6 +27,7 @@
 #include <set>
 #include <map>
 #include <list>
+#include <forward_list>
 #include <iomanip>      // IO manipulation
 #include <cctype>       // for character-based functions
 #include <cstring>      // Functions that work with C-style strings
@@ -111,8 +112,9 @@ int main()
 	//Section19_Challenge3();
 	//Section19_Challenge4();
 
-	//Section20();
-	Section20_Challenge1();
+	Section20();
+	//Section20_Challenge1();
+	//Section20_Challenge2();
 
 
 	return 0;
@@ -3289,7 +3291,7 @@ void Section20()
 		}
 
 		My_Pair<std::string, int> pair1{ "Martha", 100 };
-		My_Pair<Item<double>, char> pair2{ {"Jason", 16.1}, 300 };
+		My_Pair<Item<double>, char> pair2{ {"Jason", 16.1}, '2' };
 
 		std::cout << pair1.first << ", " << pair1.second << '\n';
 		std::cout << pair2.first.get_name() << ", " << pair2.second << '\n';
@@ -3612,6 +3614,56 @@ void Section20()
 
 	std::cout << "\n====== SEQ-CON LIST/FORWARD LIST ======\n\n";
 	{
+		/*
+		*  Non-contiguous in memory
+		*  No direct access to elements
+		*  Very efficient for insterting and deleting elements once an element is found
+		*/
+
+		// List is bidirectional (doubly-linked)
+		// Can use a lot of methods that deque can (pop_front, push_back, emplace etc)
+		std::list<int> l{ 1,2,3,4,5 };
+		std::list<int> l2{ 10, 100 }; // ten 100s
+
+		auto it = std::find(l.begin(), l.end(), 3);  // get position of 3
+		l.insert(it, 10); // 1 2 10 3 4 5 - it still points to 3
+		std::advance(it, -2); // point to 2
+		l.erase(it);      // 1 10 3 4 5 - erased the 2 - it now invalid, reset!
+		l.resize(2);      // 1 2 
+		l.resize(5);      // 1 2 0 0 0 - initialises extra space with default constructor
+
+		// Forward-list is unidirectional (singly-linked)
+		// less overhead than list but has no reverse iterator
+		std::forward_list<int> fl{ 1,2,3,4,5 };
+
+		//std::cout << fl.size() << '\n';   // size() is not available
+		std::cout << fl.max_size() << '\n'; // big number
+		std::cout << fl.front() << '\n';    // 1
+		//std::cout << fl.back() << '\n';   // Not available - can't go from back
+
+		auto itf = std::find(fl.begin(), fl.end(), 3);
+		fl.insert_after(itf, 10);   // 1 2 3 10 4 5 - copies or moves the element into container
+		fl.emplace_after(itf, 100); // 1 2 3 100 10 4 5 - element constructed in place (no copy or move)
+		fl.erase_after(itf);        // 1 2 3 10 4 5 - erases the 100
+
+		Person p1{ "Larry", 17 };
+		std::forward_list<Person> flp;
+		flp.push_front(p1);
+		flp.pop_front();
+		flp.emplace_front("Move", 25);
+	}
+
+	std::cout << "\n====== ASSOCIATIVE CONT SETS ======\n\n";
+	{
+		/*
+		*  Associative containers
+		*  Allows for fast retrieval using keys (set, maps)
+		*  implemented as binary tree or hashsets
+		* 
+		*  Set, unordered set, multiset, unordered multiset
+		*/
+
+		std::set<int> s{ 1,2,3,4,5 };
 
 	}
 }
@@ -3669,4 +3721,145 @@ void Section20_Challenge1()
 	}
 	std::cout << std::endl;
 
+}
+
+struct Song
+{
+	std::string name;
+	std::string artist;
+	int rating;
+};
+
+void Section20_Challenge2()
+{
+	bool application = true;
+	char input{};
+	std::list<Song> playlist;
+	playlist.emplace_back(Song{ "God's Plan", "Drake", 5 });
+	playlist.emplace_back(Song{ "Never Be The Same", "Camila Cabello", 5 });
+	playlist.emplace_back(Song{ "Pray For Me", "The Weeknd and K. Lamar", 4 });
+	playlist.emplace_back(Song{ "The Middle", "Zedd, Maren Morris & Grey", 5 });
+	playlist.emplace_back(Song{ "Wait", "Maroon 5", 4 });
+	playlist.emplace_back(Song{ "Whatever It Takes", "Imagine Dragons", 3 });
+
+	// Display current song
+	std::cout << "Current song: \n";
+	auto it = playlist.begin();
+	std::cout << it->name << " by " << it->artist << std::endl;
+
+	while (application)
+	{
+
+		std::cout << "\n";
+		std::cout << "F - Play First Song\n";
+		std::cout << "N - Play Next Song\n";
+		std::cout << "P - Play Previous Song\n";
+		std::cout << "A - Add and play a new Song at current location\n";
+		std::cout << "L - List the current playlist\n";
+		std::cout << "===============================================\n";
+		std::cout << "Enter a selection (Q to quit): ";
+		std::cin >> input;
+
+		switch (input)
+		{
+			// Play first song in playlist 
+		    case 'F':
+     		case 'f':
+			{
+				it = playlist.begin();
+				std::cout << "Playing " << it->name << " by " << it->artist << std::endl;
+				break;
+			}
+
+			// Play next song
+			case 'N':
+     		case 'n':
+			{
+				it++;
+
+				// loop to beginning if reach end of playlist
+				if (it == playlist.end())
+					it = playlist.begin();
+
+				std::cout << "Playing " << it->name << " by " << it->artist << std::endl;
+
+				break;
+			}
+
+			// Play previous song
+     		case 'P':
+     		case 'p':
+			{
+				// Loop to end of playlist
+				if (it == playlist.begin())
+				{
+					it = playlist.end();
+				}
+
+				it--;
+
+				std::cout << "Playing " << it->name << " by " << it->artist << std::endl;
+
+				break;
+			}
+
+			// Add new song before current song
+			case 'A':
+			case 'a':
+			{
+				// Set new song to play
+				std::string name;
+				std::string artist;
+				int rating;
+
+				std::cout << "Enter song name: ";
+				std::cin >> name;
+				std::cout << "Enter song artist: ";
+				std::cin >> artist;
+				std::cout << "Enter song rating (1-5): ";
+				std::cin >> rating;
+				
+				playlist.emplace(it, Song(name, artist, rating));
+
+				it--; // Move iterator to newly added song
+
+				std::cout << "Playing " << it->name << " by " << it->artist << std::endl;
+
+				break;
+			}
+
+			// List songs
+			case 'L':
+			case 'l':
+			{
+				// List playlist
+				std::cout << std::endl;
+				auto it = playlist.begin();
+				while (it != playlist.end())
+				{
+					std::cout << std::setw(25) << std::left << it->name
+						<< std::setw(30) << std::left << it->artist
+						<< it->rating << std::endl;
+
+					it++;
+				}
+				break;
+			}
+
+			// Quit
+			case 'Q':
+			case 'q':
+			{
+				std::cout << "Quitting...\n";
+				application = false;
+				break;
+			}
+
+			default:
+			{
+				std::cout << "Not a valid input, try again.\n";
+				break;
+			}
+		}
+	}
 }
