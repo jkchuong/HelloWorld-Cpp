@@ -25,3 +25,5 @@ Areas of understanding that needs improvements:
 - Manipulating raw pointers
 
 - Using Constructors (Deep/Shallow copy, Move)
+
+- When to use pointers? (Only uniquely valuable for Polymorphism?)
